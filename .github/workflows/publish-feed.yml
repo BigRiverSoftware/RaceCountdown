@@ -1,0 +1,76 @@
+name: Publish feed
+
+# Builds events.json from supercars.com + feed/overrides.json, checks it, and publishes it to GitHub Pages
+# (plan §5.1). If any check fails the job fails, nothing is deployed, and the previous feed stays live.
+
+on:
+  schedule:
+    - cron: '17 18 * * *'        # Daily (04:17/05:17 in Sydney).
+    - cron: '17 0,6,12 * * *'    # Extra runs that only publish in race week.
+  push:
+    branches: [ dev ]
+    paths:
+      - feed/**
+      - tools/EventFeedBuilder/**
+      - src/RaceCountdown.Core/**
+      - .github/workflows/publish-feed.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  FEED_URL: https://bigriversoftware.github.io/RaceCountdown/events.json
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.feed.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Test the feed builder
+        run: dotnet test tests/EventFeedBuilder.Tests -c Release
+
+      - name: Download the live feed
+        run: curl -fsSL -o previous.json "$FEED_URL" || echo "No live feed yet."
+
+      - name: Build and check the feed
+        id: feed
+        run: |
+          args=(--out site --previous previous.json)
+          if [ "${{ github.event.schedule }}" = "17 0,6,12 * * *" ]; then
+            args+=(--race-week-only)
+          fi
+          dotnet run --project tools/EventFeedBuilder -c Release -- "${args[@]}"
+          if [ -f site/events.json ]; then
+            cp feed/events.schema.json site/
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.feed.outputs.publish == 'true'
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}events.json
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

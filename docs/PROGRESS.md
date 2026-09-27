@@ -18,7 +18,34 @@
 
 **Housekeeping:** the old `RaceCountdown/` folder holds only `bin/`, `obj/` and `.csproj.user`, which Visual Studio had locked. It's ignored by git. Delete it once VS is closed.
 
-## Phase 1 — Core and feed: not started
-- Models, validator, `NextSessionSelector`, `CountdownCalculator`, `WidgetSnapshot`, and tests covering more than 90% of Core.
-- JSON schema, `overrides.json`, `EventFeedBuilder` with fixture tests (see S1), and `publish-feed.yml`.
-- **Blocked on you**: publishing the feed needs a GitHub remote with Pages enabled.
+## Phase 1 — Core and feed: code complete (2026-09-27), feed not yet live
+
+| Item | Status |
+|------|--------|
+| Core models (`Series`, `Track`, `Session`, `RaceEvent`, `EventFeed`) and source-generated `FeedSerializer` | Done |
+| `FeedValidator` (ids, references, time zones, `startUtc` vs `startLocal`, sessions inside event dates) | Done |
+| `EventFilter`, `NextSessionSelector`, `CountdownCalculator` (`Counting` / `RaceDay` / `Live` / `AwaitingSchedule` + stale flag) | Done |
+| `StartTimeFormatter` ("Sun 11 Oct, 11:30 AEDT · 08:30 AWST (your time)") and `WidgetSnapshot` | Done |
+| Core tests: 69 tests, **100% line / 97.7% branch coverage**, including the NSW DST change on 4 Oct 2026 | Done |
+| `feed/events.schema.json`, `feed/overrides.json`, [`feed/README.md`](../feed/README.md) | Done |
+| `EventFeedBuilder`: fetch → parse → merge overrides → schema + validator + 7-day-move checks → `events.json` | Done |
+| Builder tests: 35 tests against pages saved from supercars.com on 2026-09-27 | Done |
+| [`publish-feed.yml`](../.github/workflows/publish-feed.yml): daily, plus 6-hourly in race week, deploys to GitHub Pages | Written, not yet run |
+| Feed live with the 2026 race at 2026-10-11 11:30 Australia/Sydney | **Waiting on push + Pages** (see below) |
+
+**Verification:** `dotnet build RaceCountdown.slnx` has 0 warnings and 0 errors, and all 104 tests pass. A live
+run of the builder against supercars.com produced `Race 30` at `2026-10-11T11:30:00` track time (`00:30Z`) and passed
+every check.
+
+**Design notes:**
+- "Stale" is an `IsStale` flag, not a phase, because the countdown is still shown (plan §6).
+- The feed writes nulls explicitly (`"startDate": null`), and every field is required, so a truncated or
+  malformed feed is rejected on the device instead of being read with missing values.
+- `overrides.json` also holds the series and track reference data, because the scraped pages have no time zones
+  or coordinates.
+- Between seasons, if the calendar has no upcoming Bathurst 1000, the builder publishes an undated `DateTba`
+  placeholder, so the app shows "TBA" (D13).
+- `build.yml` now triggers on `dev`, the repo's default branch. It previously listed `master`/`main`.
+
+**To go live:** push `dev`, then enable GitHub Pages with source **GitHub Actions**. The push triggers
+*Publish feed*, which deploys `events.json`.
