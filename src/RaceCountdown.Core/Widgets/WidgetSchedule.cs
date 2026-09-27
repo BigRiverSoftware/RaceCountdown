@@ -3,8 +3,9 @@ using RaceCountdown.Core.Countdown;
 namespace RaceCountdown.Core.Widgets;
 
 /// <summary>
-/// When a home-screen widget that shows whole hours (the Android widget, plan §8.2) must be redrawn. In the final
-/// 24 hours the Android widget shows a chronometer the system ticks by itself, so no redraws are needed until the start.
+/// When a home-screen widget must be redrawn. The Android widget (plan §8.2) shows whole hours and, in the final
+/// 24 hours, a chronometer the system ticks by itself, so it uses <see cref="NextRedrawUtc"/>. The Windows widget
+/// (plan §8.3) cannot tick and shows minutes, so it uses <see cref="NextMinuteRedrawUtc"/>.
 /// </summary>
 public static class WidgetSchedule
 {
@@ -22,24 +23,51 @@ public static class WidgetSchedule
     {
         var next = snapshot.Phase switch
         {
-            CountdownPhase.Counting => NextHourDrop(snapshot.TargetUtc!.Value, now),
+            CountdownPhase.Counting => NextDrop(snapshot.TargetUtc!.Value, now, TimeSpan.FromHours(1)),
             CountdownPhase.RaceDay => snapshot.TargetUtc!.Value,
             CountdownPhase.Live => now + LiveInterval,
             _ => now + AwaitingInterval,
         };
 
-        return snapshot.NextPhaseChangeUtc is { } change && change > now && change < next ? change : next;
+        return NoLaterThanPhaseChange(snapshot, now, next);
+    }
+
+    /// <summary>
+    /// The next instant minute-precision widget text (<see cref="WidgetSnapshot.Detail"/> and the race-day
+    /// <see cref="WidgetSnapshot.Headline"/>) goes out of date: when the minutes remaining next drop, when the minutes
+    /// since the green flag next rise, and periodically while waiting for a schedule. Never later than the next phase change.
+    /// </summary>
+    public static DateTimeOffset NextMinuteRedrawUtc(WidgetSnapshot snapshot, DateTimeOffset now)
+    {
+        var next = snapshot.Phase switch
+        {
+            CountdownPhase.Counting or CountdownPhase.RaceDay => NextDrop(snapshot.TargetUtc!.Value, now, TimeSpan.FromMinutes(1)),
+            CountdownPhase.Live => NextRise(snapshot.TargetUtc!.Value, now, TimeSpan.FromMinutes(1)),
+            _ => now + AwaitingInterval,
+        };
+
+        return NoLaterThanPhaseChange(snapshot, now, next);
     }
 
     /// <summary>True when the widget should show a system-ticked countdown (final 24 hours) instead of text.</summary>
     public static bool UsesChronometer(WidgetSnapshot snapshot) => snapshot.Phase == CountdownPhase.RaceDay;
 
-    // The hours shown drop by one just after the time remaining passes a whole number of hours, which is not the
-    // wall-clock hour unless the start is on the hour. CountdownCalculator rounds the remaining time up to the
-    // second, so at exactly H hours to go it still shows H; redraw one second later.
-    private static DateTimeOffset NextHourDrop(DateTimeOffset target, DateTimeOffset now)
+    private static DateTimeOffset NoLaterThanPhaseChange(WidgetSnapshot snapshot, DateTimeOffset now, DateTimeOffset next) =>
+        snapshot.NextPhaseChangeUtc is { } change && change > now && change < next ? change : next;
+
+    // The units shown drop by one just after the time remaining passes a whole number of units, which is not the
+    // wall-clock hour or minute unless the start is on one. CountdownCalculator rounds the remaining time up to the
+    // second, so at exactly N units to go it still shows N; redraw one second later.
+    private static DateTimeOffset NextDrop(DateTimeOffset target, DateTimeOffset now, TimeSpan unit)
     {
-        var wholeHours = Math.Floor((target - now).TotalHours);
-        return target - TimeSpan.FromHours(wholeHours) + TimeSpan.FromSeconds(1);
+        var wholeUnits = Math.Floor((target - now) / unit);
+        return target - wholeUnits * unit + TimeSpan.FromSeconds(1);
+    }
+
+    // The elapsed time is rounded down, so the units shown rise exactly on each whole unit after the start.
+    private static DateTimeOffset NextRise(DateTimeOffset start, DateTimeOffset now, TimeSpan unit)
+    {
+        var wholeUnits = Math.Floor((now - start) / unit);
+        return start + (wholeUnits + 1) * unit;
     }
 }

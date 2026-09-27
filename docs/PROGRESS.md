@@ -131,3 +131,28 @@ every check.
 - Airplane mode as a separate test. The feed isn't online yet, so every refresh during these tests already failed
   and the widget kept working from the cache and bundled data.
 - A real feed download by the worker. That waits on the feed going live.
+
+## Phase 5 — Windows widget: complete (2026-09-27)
+
+| Item | Status |
+|------|--------|
+| Custom `Program.Main` (`DISABLE_XAML_GENERATED_MAIN`): starts the MAUI app, or with `-RegisterProcessAsComServer` only the widget provider | Done |
+| `WidgetComServer`: `CoRegisterClassObject` for CLSID `AF609A3B-…`, source-generated `IClassFactory`, exits when the last widget is removed | Done |
+| `CountdownWidgetProvider : IWidgetProvider` (create, delete, resize, activate/deactivate, click opens the app) | Done |
+| Adaptive Card templates, small / medium / large, on the widget art | Done |
+| Core: `WidgetSchedule.NextMinuteRedrawUtc` and `WidgetCardData` (tested) | Done |
+| Manifest: `com:ExeServer` + `windows.appExtension` widget definition `BathurstCountdown.Countdown` | Done |
+| `WindowsWidgetUpdater`: the app redraws pinned widgets after it downloads a feed | Done |
+| Pinned from the Widgets Board, updates, survives a reboot | Done (checked by hand on Windows 11) |
+
+**Verification:**
+- `dotnet build RaceCountdown.slnx`: 0 warnings, 0 errors. Core tests: 143 passed (10 new); builder tests: 35 passed.
+- Packaged app registered with `tools/dev/Register-WindowsApp.ps1`; the generated `AppxManifest.xml` has the COM server and widget definition.
+- COM activation, without the board: creating the CLSID starts `RaceCountdown.exe -RegisterProcessAsComServer -Embedding`
+  with no window and returns the provider. (The first try found `GetWidgetInfos()` returns null when no widget is pinned; fixed.)
+- A normal launch still opens the app window through the custom `Main`, so spike S2's duplicate-`Main` concern is closed.
+- **Windows 11, by hand:** pinned from the Widgets Board picker; small, medium and large layouts shown correctly and
+  readable on the artwork; the minutes ticked down while the board was open; clicking opened the app; the widget was
+  still pinned and up to date after a reboot.
+
+**Note:** `tools/dev/Register-WindowsApp.ps1` uninstalls the package before registering, which also removes pinned widgets.

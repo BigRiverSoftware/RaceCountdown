@@ -1,6 +1,6 @@
-using System.Net.Http.Headers;
 using Android.Content;
 using RaceCountdown.Core.Feed;
+using RaceCountdown.Services;
 
 namespace RaceCountdown.Widgets;
 
@@ -11,13 +11,7 @@ namespace RaceCountdown.Widgets;
 /// </summary>
 internal static class AndroidFeed
 {
-    private static readonly Lazy<HttpClient> Http = new(() =>
-    {
-        var http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
-        http.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("BathurstCountdown", AppInfo.Current.VersionString));
-        http.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("(+https://bigriversoftware.au)"));
-        return http;
-    });
+    private static readonly Lazy<HttpClient> Http = new(FeedHttp.Create);
 
     public static FeedStore CreateStore(Context context) => new(
         new FeedCache(context.FilesDir!.AbsolutePath),

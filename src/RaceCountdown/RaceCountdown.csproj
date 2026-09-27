@@ -71,6 +71,17 @@
 		<PackageReference Include="Xamarin.AndroidX.Work.Runtime" Version="2.10.3" />
 	</ItemGroup>
 
+	<!-- Windows widget provider (plan §8.3, D5): a custom Main that can start as a COM server instead of the UI,
+	     source-generated COM for the class factory, and the Adaptive Card templates. -->
+	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+		<DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+		<EmbeddedResource Include="Platforms\Windows\Widgets\Templates\*.json" LogicalName="RaceCountdown.Widgets.Templates.%(Filename)%(Extension)" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\RaceCountdown.Core\RaceCountdown.Core.csproj" />
 	</ItemGroup>

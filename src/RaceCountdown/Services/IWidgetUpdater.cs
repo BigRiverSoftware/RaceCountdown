@@ -6,7 +6,7 @@ public interface IWidgetUpdater
     void RequestUpdate();
 }
 
-/// <summary>Used until the Android (Phase 4) and Windows (Phase 5) widgets exist.</summary>
+/// <summary>Used on platforms without a widget implementation.</summary>
 public sealed class NoWidgetUpdater : IWidgetUpdater
 {
     public void RequestUpdate()

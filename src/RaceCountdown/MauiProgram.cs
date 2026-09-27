@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
 using RaceCountdown.Core.Feed;
 using RaceCountdown.Services;
@@ -26,12 +25,7 @@ public static class MauiProgram
         var services = builder.Services;
         services.AddSingleton(TimeProvider.System);
 
-        services.AddHttpClient(nameof(EventFeedClient), http =>
-        {
-            http.Timeout = TimeSpan.FromSeconds(20);
-            http.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("BathurstCountdown", AppInfo.Current.VersionString));
-            http.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("(+https://bigriversoftware.au)"));
-        });
+        services.AddHttpClient(nameof(EventFeedClient), FeedHttp.Configure);
         services.AddSingleton<IEventFeedClient>(sp => new EventFeedClient(
             sp.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(EventFeedClient)),
             EventFeedClient.DefaultFeedUrl));
@@ -46,6 +40,8 @@ public static class MauiProgram
 
 #if ANDROID
         services.AddSingleton<IWidgetUpdater, Widgets.AndroidWidgetUpdater>();
+#elif WINDOWS
+        services.AddSingleton<IWidgetUpdater, Widgets.WindowsWidgetUpdater>();
 #else
         services.AddSingleton<IWidgetUpdater, NoWidgetUpdater>();
 #endif

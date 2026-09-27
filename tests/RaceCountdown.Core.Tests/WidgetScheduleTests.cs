@@ -78,6 +78,61 @@ public class WidgetScheduleTests
     }
 
     [Fact]
+    public void Minute_widget_counting_redraws_just_after_the_minutes_shown_drop()
+    {
+        var now = RaceStart - new TimeSpan(13, 4, 7, 30);
+
+        var next = WidgetSchedule.NextMinuteRedrawUtc(SnapshotAt(now), now);
+
+        Assert.Equal(RaceStart - new TimeSpan(13, 4, 7, 0) + TimeSpan.FromSeconds(1), next);
+        Assert.Equal("04h 07m", SnapshotAt(next - TimeSpan.FromSeconds(1)).Detail);
+        Assert.Equal("04h 06m", SnapshotAt(next).Detail);
+    }
+
+    [Fact]
+    public void Minute_widget_race_day_redraws_each_minute_then_at_the_start()
+    {
+        var now = RaceStart - new TimeSpan(4, 12, 20);
+
+        var next = WidgetSchedule.NextMinuteRedrawUtc(SnapshotAt(now), now);
+
+        Assert.Equal(RaceStart - new TimeSpan(4, 12, 0) + TimeSpan.FromSeconds(1), next);
+        Assert.Equal("04:11", SnapshotAt(next).Headline);
+
+        var lastSeconds = RaceStart - TimeSpan.FromSeconds(20);
+        Assert.Equal(RaceStart, WidgetSchedule.NextMinuteRedrawUtc(SnapshotAt(lastSeconds), lastSeconds));
+    }
+
+    [Fact]
+    public void Minute_widget_counting_just_before_race_day_redraws_at_the_phase_change()
+    {
+        var now = RaceStart - TimeSpan.FromHours(24) - TimeSpan.FromSeconds(30);
+
+        Assert.Equal(RaceStart - TimeSpan.FromHours(24), WidgetSchedule.NextMinuteRedrawUtc(SnapshotAt(now), now));
+    }
+
+    [Fact]
+    public void Minute_widget_live_redraws_when_the_elapsed_minutes_change()
+    {
+        var now = RaceStart + new TimeSpan(1, 5, 40);
+
+        var next = WidgetSchedule.NextMinuteRedrawUtc(SnapshotAt(now), now);
+
+        Assert.Equal(RaceStart + new TimeSpan(1, 6, 0), next);
+        Assert.Equal("Green flag 1:05 ago", SnapshotAt(next - TimeSpan.FromSeconds(1)).Detail);
+        Assert.Equal("Green flag 1:06 ago", SnapshotAt(next).Detail);
+    }
+
+    [Fact]
+    public void Minute_widget_awaiting_schedule_redraws_every_six_hours()
+    {
+        var now = RaceStart.AddDays(30);
+        var snapshot = SnapshotAt(now, TestFeeds.Feed(TestFeeds.Tba(2027)));
+
+        Assert.Equal(now + WidgetSchedule.AwaitingInterval, WidgetSchedule.NextMinuteRedrawUtc(snapshot, now));
+    }
+
+    [Fact]
     public void Counting_short_detail_uses_singular()
     {
         Assert.Equal("1 hour", SnapshotAt(RaceStart - new TimeSpan(3, 1, 20, 0)).ShortDetail);
