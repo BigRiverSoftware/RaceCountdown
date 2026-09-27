@@ -1,0 +1,41 @@
+name: Build
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: microsoft
+          java-version: '17'
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+
+      - name: Restore
+        run: dotnet restore RaceCountdown.slnx
+
+      - name: Build (Android + Windows)
+        run: dotnet build RaceCountdown.slnx --no-restore -c Release
+
+      - name: Test
+        run: dotnet test RaceCountdown.slnx --no-build -c Release --collect:"XPlat Code Coverage" --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults

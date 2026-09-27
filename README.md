@@ -73,8 +73,6 @@ dotnet build src/RaceCountdown -f net10.0-android -t:Run
 dotnet test tests/RaceCountdown.Core.Tests
 ```
 
-> Until Phase 0 of the plan moves the project, it lives at `RaceCountdown/` rather than `src/RaceCountdown/`.
-
 ### Adding the widget
 - **Android:** long-press the home screen → *Widgets* → *Bathurst Countdown* → drag it into place.
 - **Windows 11:** open the Widgets Board (<kbd>Win</kbd>+<kbd>W</kbd>) → *+ Add widgets* → *Bathurst Countdown*. The app must be installed as a package: deploy from Visual Studio or install the MSIX.
