@@ -79,7 +79,7 @@ public sealed record WidgetSnapshot(
         };
     }
 
-    private static string DescribeDates(RaceEvent? ev)
+    internal static string DescribeDates(RaceEvent? ev)
     {
         if (ev?.StartDate is not { } start || ev.EndDate is not { } end)
         {

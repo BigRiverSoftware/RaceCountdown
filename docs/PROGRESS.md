@@ -49,3 +49,33 @@ every check.
 
 **To go live:** push `dev`, then enable GitHub Pages with source **GitHub Actions**. The push triggers
 *Publish feed*, which deploys `events.json`.
+
+## Phase 2 — App: complete (2026-09-27)
+
+| Item | Status |
+|------|--------|
+| Core: `EventFeedClient` (ETag / `If-None-Match`, 20 s timeout, re-validates on device) | Done |
+| Core: `FeedCache` (atomic files in app data, shared with the widgets later) and `FeedStore` (cache or bundled snapshot, whichever is newer, then background refresh) | Done |
+| Core: `RefreshPolicy` (start-up, 12-hourly, hourly in race week, after the race starts and finishes, 15 min retry) | Done |
+| Core: `CountdownDisplay` — all page text for every state, unit-tested | Done |
+| App: `CountdownViewModel` (1 s tick while visible, stops in the background), `CountdownPage` (segmented countdown, RACE DAY / RACE UNDERWAY / TBA, start time in track and local time, footer, pull-to-refresh + Refresh button, wide layout ≥ 720 px) | Done |
+| Bundled `Resources/Raw/events.snapshot.json` (the 2026 race) | Done |
+| DI in `MauiProgram`; placeholder `MainPage` removed; `IWidgetUpdater` no-op until Phases 4–5 | Done |
+| `tools/dev/Register-WindowsApp.ps1` — deploys the packaged Windows app from the command line | Done |
+
+**Verification:**
+- `dotnet build RaceCountdown.slnx`: 0 warnings, 0 errors. Core tests: 120 passed, **99.5% line / 96.6% branch coverage**.
+  Builder tests unchanged (35 passed).
+- **Windows 11** (packaged, via the dev script): cold start with no feed online showed 13 d 23 h 09 m to 11 Oct
+  11:30 AEDT from the bundled snapshot, ticking each second.
+- **Android API 26 emulator** (Release APK): same result, 13 d 22 h 30 m at 11:59 AEST.
+- **Roll-over** after a simulated race start is covered by `FeedStoreTests.Rolls_over_to_next_years_race_after_the_race_finishes`
+  (fake clock: Counting 2026 → Live → Counting 2027) rather than on a device; the app has no hidden clock override.
+- Not yet seen: a real download, because the feed is not published until the repo is pushed and Pages is enabled.
+  Until then every start-up refresh fails and the app correctly keeps the bundled data.
+
+**Notes:**
+- A Debug APK installed with `adb install` crashes at start ("No assemblies found … Fast Deployment"). That is normal for
+  Debug builds; use `dotnet build -t:Run` or a Release APK.
+- The API 34 Play Store emulator image hung on every `adb install`; the API 26 image worked. Retry API 34 in Phase 4.
+- Decisions taken without asking are listed in [DECISIONS.md](DECISIONS.md).

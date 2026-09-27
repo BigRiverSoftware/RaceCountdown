@@ -3,12 +3,14 @@
     x:Class="RaceCountdown.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:RaceCountdown"
-    Title="RaceCountdown">
+    xmlns:views="clr-namespace:RaceCountdown.Views"
+    Title="Bathurst Countdown"
+    Shell.FlyoutBehavior="Disabled">
 
+    <!-- v1 has one page. EventListPage and SettingsPage can be added here later (plan §7). -->
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+        Title="Countdown"
+        ContentTemplate="{DataTemplate views:CountdownPage}"
+        Route="Countdown" />
 
 </Shell>
