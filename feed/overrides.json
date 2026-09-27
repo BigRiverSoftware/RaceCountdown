@@ -1,0 +1,24 @@
+{
+  // Hand-curated data for tools/EventFeedBuilder. See feed/README.md.
+  "series": [
+    {
+      "id": "supercars",
+      "name": "Repco Supercars Championship",
+      "shortName": "Supercars",
+      "accentColour": "#E10600"
+    }
+  ],
+  "tracks": [
+    {
+      "id": "mount-panorama",
+      "name": "Mount Panorama Circuit",
+      "location": "Bathurst, NSW",
+      "countryCode": "AU",
+      "timeZoneId": "Australia/Sydney",
+      "latitude": -33.4475,
+      "longitude": 149.557
+    }
+  ],
+  // An event here replaces the scraped event with the same id completely.
+  "events": []
+}

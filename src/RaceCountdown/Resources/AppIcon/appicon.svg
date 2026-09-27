@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- App icon background layer (plan §9): sunset sky over the Mount Panorama ridgeline. Original artwork. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="456" height="456" viewBox="0 0 456 456">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2B124C" />
+      <stop offset="0.45" stop-color="#B0185E" />
+      <stop offset="0.75" stop-color="#FF6A00" />
+      <stop offset="1" stop-color="#FFC21A" />
+    </linearGradient>
+    <radialGradient id="sun" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFE38A" />
+      <stop offset="0.6" stop-color="#FFC21A" />
+      <stop offset="1" stop-color="#FFC21A" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="456" height="456" fill="url(#sky)" />
+  <circle cx="300" cy="300" r="120" fill="url(#sun)" opacity="0.8" />
+  <!-- Far ridge -->
+  <path d="M0,330 C60,300 110,318 160,300 C220,278 260,250 320,262 C380,274 420,300 456,292 L456,456 L0,456 Z" fill="#7A1450" opacity="0.85" />
+  <!-- Mount Panorama -->
+  <path d="M0,372 C70,352 120,330 190,300 C240,280 290,272 340,292 C390,312 420,340 456,348 L456,456 L0,456 Z" fill="#2E6B3A" />
+  <path d="M0,410 C90,392 170,372 250,376 C330,380 400,400 456,396 L456,456 L0,456 Z" fill="#1C4526" />
+</svg>

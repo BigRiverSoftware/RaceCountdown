@@ -1,0 +1,251 @@
+name: Developer test build
+
+# Builds Release packages for every supported platform (Android + Windows, plan D1), signs them with
+# self-signed TEST keys and attaches them to a GitHub *pre-release* for testers. This is not the real
+# release pipeline (plan Phase 6 `release.yml`), which signs with the long-lived keys.
+#
+# Optional repository secrets keep the test keys stable between runs, so a new test build installs over
+# the previous one. Without them a throwaway key is made each run.
+#   ANDROID_TEST_KEYSTORE_BASE64 / ANDROID_TEST_KEYSTORE_PASSWORD   PKCS12 keystore, alias `bathurstcountdown-test`
+#   WINDOWS_TEST_PFX_BASE64 / WINDOWS_TEST_PFX_PASSWORD             code-signing .pfx, subject `CN=Big River Software`
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (major.minor.patch.build)'
+        required: true
+        default: '0.9.1.4'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dev-release-${{ inputs.version }}
+  cancel-in-progress: false
+
+env:
+  VERSION: ${{ inputs.version }}
+  PROJECT: src/RaceCountdown/RaceCountdown.csproj
+  DOTNET_NOLOGO: true
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      windows-display: ${{ steps.v.outputs.windows-display }}
+      windows-build: ${{ steps.v.outputs.windows-build }}
+      android-code: ${{ steps.v.outputs.android-code }}
+    steps:
+      # MAUI only accepts a 3-part ApplicationDisplayVersion plus an integer ApplicationVersion on Windows; it
+      # joins them into the 4-part MSIX version. Android's versionCode must be one increasing integer.
+      - id: v
+        run: |
+          if [[ ! "$VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            echo "::error::Version '$VERSION' must be major.minor.patch.build"; exit 1
+          fi
+          a=${BASH_REMATCH[1]} b=${BASH_REMATCH[2]} c=${BASH_REMATCH[3]} d=${BASH_REMATCH[4]}
+          if (( a > 2000 || b > 99 || c > 99 || d > 99 )); then
+            echo "::error::major must be <= 2000 and minor, patch and build <= 99 (Android versionCode)"; exit 1
+          fi
+          echo "windows-display=$a.$b.$c" >> "$GITHUB_OUTPUT"
+          echo "windows-build=$d" >> "$GITHUB_OUTPUT"
+          echo "android-code=$(( a * 1000000 + b * 10000 + c * 100 + d ))" >> "$GITHUB_OUTPUT"
+
+  android:
+    needs: version
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: microsoft
+          java-version: '17'
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+
+      - name: Create test signing key
+        shell: pwsh
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_TEST_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_TEST_KEYSTORE_PASSWORD }}
+        run: |
+          $keystore = Join-Path $env:RUNNER_TEMP 'test.keystore'
+          if ($env:KEYSTORE_BASE64) {
+            [IO.File]::WriteAllBytes($keystore, [Convert]::FromBase64String($env:KEYSTORE_BASE64))
+            $password = $env:KEYSTORE_PASSWORD
+          } else {
+            $password = [guid]::NewGuid().ToString('N')
+            keytool -genkeypair -keystore $keystore -storetype PKCS12 -alias bathurstcountdown-test `
+              -keyalg RSA -keysize 2048 -validity 3650 -storepass $password -keypass $password `
+              -dname 'CN=Big River Software (test build), O=Big River Software, C=AU'
+            if ($LASTEXITCODE -ne 0) { throw 'keytool failed' }
+            Write-Host '::warning::No ANDROID_TEST_KEYSTORE_BASE64 secret: signed with a throwaway key, so this APK will not install over an earlier test build.'
+          }
+          Write-Host "::add-mask::$password"
+          "ANDROID_KEYSTORE=$keystore" >> $env:GITHUB_ENV
+          "ANDROID_KEYSTORE_PASSWORD=$password" >> $env:GITHUB_ENV
+
+      - name: Publish signed APK
+        run: >
+          dotnet publish ${{ env.PROJECT }} -f net10.0-android -c Release
+          -p:AndroidPackageFormat=apk
+          -p:ApplicationDisplayVersion=${{ env.VERSION }}
+          -p:ApplicationVersion=${{ needs.version.outputs.android-code }}
+          -p:AndroidKeyStore=true
+          -p:AndroidSigningKeyStore="${{ env.ANDROID_KEYSTORE }}"
+          -p:AndroidSigningKeyAlias=bathurstcountdown-test
+          -p:AndroidSigningStorePass=env:ANDROID_KEYSTORE_PASSWORD
+          -p:AndroidSigningKeyPass=env:ANDROID_KEYSTORE_PASSWORD
+
+      - name: Collect package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory dist | Out-Null
+          $apk = Get-ChildItem src/RaceCountdown/bin/Release/net10.0-android/publish -Filter *-Signed.apk | Select-Object -First 1
+          if (-not $apk) { throw 'Signed APK not found.' }
+          Copy-Item $apk.FullName "dist/BathurstCountdown-$env:VERSION-android.apk"
+          Remove-Item $env:ANDROID_KEYSTORE
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: dist/*
+          if-no-files-found: error
+
+  windows:
+    needs: version
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: microsoft
+          java-version: '17'
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+
+      - name: Test core library
+        run: dotnet test tests/RaceCountdown.Core.Tests -c Release
+
+      # Made with .NET rather than New-SelfSignedCertificate so nothing is written to a certificate store.
+      # The subject must match the manifest's Identity Publisher exactly.
+      - name: Create test signing certificate
+        shell: pwsh
+        env:
+          PFX_BASE64: ${{ secrets.WINDOWS_TEST_PFX_BASE64 }}
+          PFX_PASSWORD: ${{ secrets.WINDOWS_TEST_PFX_PASSWORD }}
+        run: |
+          $pfx = Join-Path $env:RUNNER_TEMP 'test-signing.pfx'
+          if ($env:PFX_BASE64) {
+            [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:PFX_BASE64))
+            $password = $env:PFX_PASSWORD
+          } else {
+            $password = [guid]::NewGuid().ToString('N')
+            $rsa = [System.Security.Cryptography.RSA]::Create(2048)
+            $request = [System.Security.Cryptography.X509Certificates.CertificateRequest]::new('CN=Big River Software', $rsa,
+              [System.Security.Cryptography.HashAlgorithmName]::SHA256, [System.Security.Cryptography.RSASignaturePadding]::Pkcs1)
+            $request.CertificateExtensions.Add([System.Security.Cryptography.X509Certificates.X509BasicConstraintsExtension]::new($false, $false, 0, $true))
+            $request.CertificateExtensions.Add([System.Security.Cryptography.X509Certificates.X509KeyUsageExtension]::new('DigitalSignature', $true))
+            $codeSigning = [System.Security.Cryptography.OidCollection]::new()
+            [void] $codeSigning.Add([System.Security.Cryptography.Oid]::new('1.3.6.1.5.5.7.3.3'))
+            $request.CertificateExtensions.Add([System.Security.Cryptography.X509Certificates.X509EnhancedKeyUsageExtension]::new($codeSigning, $false))
+            $cert = $request.CreateSelfSigned([DateTimeOffset]::UtcNow.AddDays(-1), [DateTimeOffset]::UtcNow.AddYears(1))
+            [IO.File]::WriteAllBytes($pfx, $cert.Export('Pfx', $password))
+            Write-Host '::warning::No WINDOWS_TEST_PFX_BASE64 secret: signed with a new certificate, so testers must trust this build''s .cer again.'
+          }
+          Write-Host "::add-mask::$password"
+          "WINDOWS_PFX=$pfx" >> $env:GITHUB_ENV
+          "WINDOWS_PFX_PASSWORD=$password" >> $env:GITHUB_ENV
+
+      # The MSIX build task cannot import a password-protected .pfx (APPX0105), so build unsigned and sign with signtool.
+      - name: Publish MSIX
+        run: >
+          dotnet publish ${{ env.PROJECT }} -f net10.0-windows10.0.19041.0 -c Release
+          -p:ApplicationDisplayVersion=${{ needs.version.outputs.windows-display }}
+          -p:ApplicationVersion=${{ needs.version.outputs.windows-build }}
+          -p:AppxPackageSigningEnabled=false
+
+      - name: Sign and collect packages
+        shell: pwsh
+        run: |
+          $packageDir = Get-ChildItem src/RaceCountdown/bin/Release/net10.0-windows10.0.19041.0/win-x64/AppPackages -Directory |
+            Where-Object Name -like "*_$($env:VERSION)_*" | Select-Object -First 1
+          if (-not $packageDir) { throw "No AppPackages folder for version $env:VERSION." }
+          $msix = Get-ChildItem $packageDir.FullName -Filter *.msix | Select-Object -First 1
+
+          $signtool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin" -Recurse -Filter signtool.exe |
+            Where-Object FullName -like '*\x64\*' | Sort-Object FullName | Select-Object -Last 1
+          & $signtool.FullName sign /fd SHA256 /f $env:WINDOWS_PFX /p $env:WINDOWS_PFX_PASSWORD $msix.FullName
+          if ($LASTEXITCODE -ne 0) { throw 'signtool failed' }
+
+          $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($env:WINDOWS_PFX, $env:WINDOWS_PFX_PASSWORD)
+          $signer = (Get-AuthenticodeSignature $msix.FullName).SignerCertificate
+          if ($signer.Thumbprint -ne $cert.Thumbprint) { throw 'The MSIX is not signed with the test certificate.' }
+
+          New-Item -ItemType Directory dist | Out-Null
+          $name = "BathurstCountdown-$env:VERSION-windows-x64"
+          $cerBytes = $cert.Export('Cert')
+          [IO.File]::WriteAllBytes("dist/BathurstCountdown-$env:VERSION-test-signing.cer", $cerBytes)
+          Copy-Item $msix.FullName "dist/$name.msix"
+
+          # Full package folder (MSIX, Windows App Runtime dependencies, Install.ps1) plus the .cer that Install.ps1 looks for.
+          [IO.File]::WriteAllBytes((Join-Path $packageDir.FullName "$($msix.BaseName).cer"), $cerBytes)
+          Compress-Archive -Path "$($packageDir.FullName)/*" -DestinationPath "dist/$name.zip"
+          Remove-Item $env:WINDOWS_PFX
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/*
+          if-no-files-found: error
+
+  release:
+    needs: [android, windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Checksums
+        working-directory: dist
+        run: sha256sum * > SHA256SUMS.txt && cat SHA256SUMS.txt
+
+      - name: Publish pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v${{ inputs.version }}-dev
+        run: |
+          cat > notes.md <<EOF
+          **Developer test build — not for general release.** Built from \`${GITHUB_SHA::7}\` and signed with self-signed test keys.
+
+          **Android:** allow "Install unknown apps" for your browser or file manager, then open \`BathurstCountdown-$VERSION-android.apk\`.
+
+          **Windows 11:** import \`BathurstCountdown-$VERSION-test-signing.cer\` into *Local Machine → Trusted People*, then open \`BathurstCountdown-$VERSION-windows-x64.msix\`.
+          If the Windows App Runtime is missing, unzip \`BathurstCountdown-$VERSION-windows-x64.zip\` and run \`Install.ps1\` instead (it trusts the certificate and installs the runtime too).
+
+          Check downloads against \`SHA256SUMS.txt\`.
+          EOF
+
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release upload "$TAG" dist/* --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$TAG" dist/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+              --prerelease --latest=false --title "Bathurst Countdown $VERSION (developer test build)" --notes-file notes.md
+          fi

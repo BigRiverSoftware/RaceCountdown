@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "generatedUtc": "2026-09-27T01:12:04Z",
+  "series": [
+    {
+      "id": "supercars",
+      "name": "Repco Supercars Championship",
+      "shortName": "Supercars",
+      "accentColour": "#E10600"
+    }
+  ],
+  "tracks": [
+    {
+      "id": "mount-panorama",
+      "name": "Mount Panorama Circuit",
+      "location": "Bathurst, NSW",
+      "countryCode": "AU",
+      "timeZoneId": "Australia/Sydney",
+      "latitude": -33.4475,
+      "longitude": 149.557
+    }
+  ],
+  "events": [
+    {
+      "id": "supercars-2026-bathurst-1000",
+      "seriesId": "supercars",
+      "trackId": "mount-panorama",
+      "name": "Repco Bathurst 1000",
+      "startDate": "2026-10-08",
+      "endDate": "2026-10-11",
+      "status": "Confirmed",
+      "sessions": [
+        {
+          "id": "race-30",
+          "name": "Race 30",
+          "type": "Race",
+          "startUtc": "2026-10-11T00:30:00Z",
+          "startLocal": "2026-10-11T11:30:00",
+          "estimatedDuration": "07:00:00"
+        }
+      ]
+    }
+  ]
+}

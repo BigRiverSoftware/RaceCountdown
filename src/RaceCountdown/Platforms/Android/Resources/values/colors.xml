@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Plan §9 palette: status bar and system accents match the top of the countdown artwork. -->
+    <color name="colorPrimary">#2B124C</color>
+    <color name="colorPrimaryDark">#140A2A</color>
+    <color name="colorAccent">#FFC21A</color>
+</resources>

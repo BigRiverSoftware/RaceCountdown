@@ -1,0 +1,56 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "backgroundImage": {
+    "url": "${background}",
+    "fillMode": "cover",
+    "horizontalAlignment": "center",
+    "verticalAlignment": "bottom"
+  },
+  "verticalContentAlignment": "Center",
+  "selectAction": {
+    "type": "Action.Execute",
+    "verb": "open",
+    "tooltip": "Open Bathurst Countdown"
+  },
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "${title}",
+      "size": "Large",
+      "weight": "Bolder",
+      "color": "Light",
+      "horizontalAlignment": "Center",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "${headline}",
+      "size": "ExtraLarge",
+      "weight": "Bolder",
+      "color": "Light",
+      "horizontalAlignment": "Center",
+      "spacing": "Large"
+    },
+    {
+      "type": "TextBlock",
+      "text": "${detail}",
+      "size": "Large",
+      "color": "Light",
+      "horizontalAlignment": "Center",
+      "spacing": "Small",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "$when": "${isStale}",
+      "text": "${staleText}",
+      "size": "Small",
+      "color": "Light",
+      "isSubtle": true,
+      "horizontalAlignment": "Center",
+      "wrap": true
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Stylised Mount Panorama circuit (original artwork, not traced from any map or logo).
+  200×200 units, north roughly up, drawn in racing order from the start/finish line:
+  Pit Straight → Hell Corner → Mountain Straight → Griffins Bend → The Cutting → Reid Park → Sulman Park →
+  McPhillamy Park → Skyline → The Esses → The Dipper → Forrest's Elbow → Conrod Straight → The Chase → Murray's Corner.
+  Every other asset reuses this path data; keep them in sync if it changes.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <path id="circuit" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"
+        d="M122,168 L50,172 Q34,173 39,159 L70,94 Q75,83 68,77 Q61,69 71,62 Q84,56 92,47 Q101,38 113,44 Q125,49 134,38
+           Q142,29 151,34 Q159,40 151,50 Q144,58 154,63 Q164,68 158,77 Q153,85 163,90 L170,140 Q171,148 165,152
+           Q160,156 166,161 Q172,167 162,171 L122,168 Z" />
+  <!-- Start/finish line -->
+  <rect x="120" y="161" width="4" height="15" fill="#FFC21A" />
+</svg>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RaceCountdown.ViewModels"
+             x:Class="RaceCountdown.Views.CountdownPage"
+             x:DataType="vm:CountdownViewModel"
+             Shell.NavBarIsVisible="False"
+             Title="Bathurst Countdown">
+
+    <ContentPage.Resources>
+        <Style x:Key="SegmentNumber" TargetType="Label">
+            <Setter Property="FontFamily" Value="OpenSansSemibold" />
+            <Setter Property="FontSize" Value="40" />
+            <Setter Property="TextColor" Value="White" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="SegmentCaption" TargetType="Label">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="CharacterSpacing" Value="2" />
+            <Setter Property="TextColor" Value="{StaticResource CountdownGold}" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="Segment" TargetType="Border">
+            <Setter Property="StrokeThickness" Value="0" />
+            <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+            <Setter Property="BackgroundColor" Value="{StaticResource CountdownPanel}" />
+            <Setter Property="Padding" Value="4,8" />
+            <Setter Property="WidthRequest" Value="62" />
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid x:Name="Root" BackgroundColor="#140A2A" SizeChanged="OnRootSizeChanged">
+        <!-- Mount Panorama artwork (plan §9), portrait or landscape crop chosen by window shape in code-behind. -->
+        <Image x:Name="BackgroundArt" Source="background_portrait.png" Aspect="AspectFill"
+               SemanticProperties.Description="Sunset over Mount Panorama" />
+
+        <!--
+            Readability: a light overlay keeps the art colourful; the content card (50%) on top of it (at least 25%)
+            gives at least 62% behind the countdown, and the overlay reaches 62% under the footer.
+            tools/dev/check_contrast.py assumes these values.
+        -->
+        <BoxView>
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#40140A2A" Offset="0.0" />
+                    <GradientStop Color="#59140A2A" Offset="0.6" />
+                    <GradientStop Color="#9E140A2A" Offset="0.85" />
+                    <GradientStop Color="#BF140A2A" Offset="1.0" />
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="WindowWidth">
+                    <VisualState x:Name="Narrow">
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="0" />
+                        </VisualState.StateTriggers>
+                    </VisualState>
+                    <VisualState x:Name="Wide">
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="720" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter TargetName="TitleLabel" Property="Label.FontSize" Value="44" />
+                            <Setter TargetName="BannerLabel" Property="Label.FontSize" Value="40" />
+                            <Setter TargetName="DaysNumber" Property="Label.FontSize" Value="84" />
+                            <Setter TargetName="HoursNumber" Property="Label.FontSize" Value="84" />
+                            <Setter TargetName="MinutesNumber" Property="Label.FontSize" Value="84" />
+                            <Setter TargetName="SecondsNumber" Property="Label.FontSize" Value="84" />
+                            <Setter TargetName="DaysSegment" Property="Border.WidthRequest" Value="150" />
+                            <Setter TargetName="HoursSegment" Property="Border.WidthRequest" Value="150" />
+                            <Setter TargetName="MinutesSegment" Property="Border.WidthRequest" Value="150" />
+                            <Setter TargetName="SecondsSegment" Property="Border.WidthRequest" Value="150" />
+                            <Setter TargetName="MainContent" Property="VerticalStackLayout.Spacing" Value="28" />
+                            <Setter TargetName="Segments" Property="HorizontalStackLayout.Spacing" Value="10" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </VisualStateManager.VisualStateGroups>
+
+        <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}" RefreshColor="{StaticResource CountdownGold}">
+            <ScrollView>
+                <Grid RowDefinitions="*,Auto,*" MinimumHeightRequest="480" Padding="16,32">
+                    <Border Grid.Row="1" HorizontalOptions="Center" MaximumWidthRequest="800"
+                            BackgroundColor="#80140A2A" StrokeThickness="0" StrokeShape="RoundRectangle 24" Padding="12,24">
+                    <VerticalStackLayout x:Name="MainContent" Spacing="18">
+
+                        <Label x:Name="TitleLabel"
+                               Text="{Binding Display.Title}"
+                               FontFamily="OpenSansSemibold" FontSize="30" TextColor="White"
+                               HorizontalTextAlignment="Center"
+                               SemanticProperties.HeadingLevel="Level1" />
+
+                        <Label Text="{Binding Display.Subtitle}"
+                               FontSize="14" TextColor="{StaticResource CountdownMuted}"
+                               HorizontalTextAlignment="Center" />
+
+                        <Label x:Name="BannerLabel"
+                               Text="{Binding Display.Banner}"
+                               IsVisible="{Binding Display.HasBanner}"
+                               FontFamily="OpenSansSemibold" FontSize="28" CharacterSpacing="4"
+                               TextColor="{StaticResource CountdownGold}"
+                               HorizontalTextAlignment="Center" />
+
+                        <!-- The segmented countdown. Fixed-width segments keep it steady as digits change. -->
+                        <HorizontalStackLayout x:Name="Segments" HorizontalOptions="Center" Spacing="6"
+                                               IsVisible="{Binding Display.ShowCountdown}"
+                                               SemanticProperties.Description="{Binding Display.AccessibleText}">
+                            <Border x:Name="DaysSegment" Style="{StaticResource Segment}" IsVisible="{Binding Display.ShowDays}">
+                                <VerticalStackLayout>
+                                    <Label x:Name="DaysNumber" Style="{StaticResource SegmentNumber}" Text="{Binding Display.Days}" />
+                                    <Label Style="{StaticResource SegmentCaption}" Text="DAYS" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border x:Name="HoursSegment" Style="{StaticResource Segment}">
+                                <VerticalStackLayout>
+                                    <Label x:Name="HoursNumber" Style="{StaticResource SegmentNumber}" Text="{Binding Display.Hours}" />
+                                    <Label Style="{StaticResource SegmentCaption}" Text="HRS" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border x:Name="MinutesSegment" Style="{StaticResource Segment}">
+                                <VerticalStackLayout>
+                                    <Label x:Name="MinutesNumber" Style="{StaticResource SegmentNumber}" Text="{Binding Display.Minutes}" />
+                                    <Label Style="{StaticResource SegmentCaption}" Text="MIN" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border x:Name="SecondsSegment" Style="{StaticResource Segment}">
+                                <VerticalStackLayout>
+                                    <Label x:Name="SecondsNumber" Style="{StaticResource SegmentNumber}" Text="{Binding Display.Seconds}" />
+                                    <Label Style="{StaticResource SegmentCaption}" Text="SEC" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </HorizontalStackLayout>
+
+                        <Label Text="{Binding Display.Detail}"
+                               IsVisible="{Binding Display.HasDetail}"
+                               FontSize="18" TextColor="White"
+                               HorizontalTextAlignment="Center"
+                               SemanticProperties.Description="{Binding Display.AccessibleText}" />
+
+                        <Label Text="{Binding Display.StartTime}"
+                               IsVisible="{Binding Display.HasStartTime}"
+                               FontSize="16" TextColor="White"
+                               HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                    </Border>
+
+                    <VerticalStackLayout Grid.Row="2" VerticalOptions="End" Spacing="6">
+                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="12">
+                            <Label Text="{Binding Display.Footer}"
+                                   FontSize="12" TextColor="{StaticResource CountdownMuted}"
+                                   VerticalTextAlignment="Center" />
+                            <Button Text="Refresh"
+                                    Command="{Binding RefreshCommand}"
+                                    FontSize="12" Padding="12,4" MinimumHeightRequest="32"
+                                    BackgroundColor="{StaticResource CountdownPanel}" TextColor="White"
+                                    SemanticProperties.Hint="Checks for an updated race start time" />
+                        </HorizontalStackLayout>
+                        <Label Text="Not affiliated with Supercars or the Bathurst 1000."
+                               FontSize="11" TextColor="{StaticResource CountdownMuted}"
+                               HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Grid>
+            </ScrollView>
+        </RefreshView>
+    </Grid>
+</ContentPage>
