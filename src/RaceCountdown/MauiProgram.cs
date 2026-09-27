@@ -44,7 +44,11 @@ public static class MauiProgram
             _ => FileSystem.Current.OpenAppPackageFileAsync(BundledSnapshotName),
             sp.GetRequiredService<TimeProvider>()));
 
+#if ANDROID
+        services.AddSingleton<IWidgetUpdater, Widgets.AndroidWidgetUpdater>();
+#else
         services.AddSingleton<IWidgetUpdater, NoWidgetUpdater>();
+#endif
         services.AddSingleton(_ => Dispatcher.GetForCurrentThread()!);
         services.AddSingleton<CountdownViewModel>();
         services.AddTransient<CountdownPage>();

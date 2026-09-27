@@ -102,3 +102,32 @@ every check.
 
 **Note:** resizetizer kept a stale icon PNG after the SVG changed. Delete `obj/.../resizetizer` after editing art
 (see [assets-src/README.md](../assets-src/README.md)).
+
+## Phase 4 — Android widget: complete (2026-09-27)
+
+| Item | Status |
+|------|--------|
+| `CountdownWidgetProvider` (receiver `au.bigriversoftware.bathurstcountdown.CountdownWidgetProvider`), medium and compact layouts, responsive on Android 12+ | Done |
+| Race-day hand-over to a system-ticked `Chronometer` (final 24 h), "RACE UNDERWAY" while live, "TBA" after | Done |
+| Redraw scheduling in Core (`WidgetSchedule`, tested) + one inexact alarm | Done |
+| `FeedRefreshWorker` (WorkManager, 12 h + on demand via `RefreshPolicy`) | Done |
+| `WidgetSystemReceiver`: boot, time set, time-zone change, app update; `RECEIVE_BOOT_COMPLETED` permission | Done |
+| App redraws widgets after it downloads a new feed (`AndroidWidgetUpdater`); tapping the widget opens the app | Done |
+
+**Verification** (Release APK):
+- Build: 0 warnings, 0 errors. Core tests: 133 passed (`WidgetScheduleTests` added).
+- **API 26 emulator** checklist:
+  - Added from the picker: "13 days / 21 hours", with the alarm set for 13:30:01 (when the hours shown change).
+  - Clock set to 10 Oct 20:00 AEDT: switched at once to a ticking chronometer, 15:29:53, "RACE DAY".
+  - Clock set to 30 min after the start: "RACE UNDERWAY" (the headline first wrapped to "RACE"; fixed with auto-sizing text).
+  - Clock set after the estimated finish: rolled over to "TBA", with the "Offline" line because the feed isn't published yet and the bundled data is over 14 days old.
+  - Reboot: widget redrawn with the real countdown and the alarm re-armed. App update: widget redrawn at once.
+  - WorkManager job registered.
+- **API 34 emulator** (a cold boot fixed the earlier install hang): added from the Pixel launcher picker, rounded
+  corners, and resizing to 2 columns switched to the compact "13 / DAYS TO GO" layout.
+
+**Not verified:**
+- API 35: no API 35 system image is installed; API 34 was used instead.
+- Airplane mode as a separate test. The feed isn't online yet, so every refresh during these tests already failed
+  and the widget kept working from the cache and bundled data.
+- A real feed download by the worker. That waits on the feed going live.

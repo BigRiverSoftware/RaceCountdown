@@ -15,8 +15,6 @@ namespace RaceCountdown.ViewModels;
 /// </summary>
 public sealed partial class CountdownViewModel : ObservableObject
 {
-    private static readonly EventFeed NoFeed = new(EventFeed.CurrentSchemaVersion, DateTimeOffset.MinValue, [], [], []);
-
     private readonly FeedStore store;
     private readonly TimeProvider time;
     private readonly IWidgetUpdater widgets;
@@ -86,7 +84,7 @@ public sealed partial class CountdownViewModel : ObservableObject
 
     private CountdownDisplay Build()
     {
-        var state = CountdownCalculator.Calculate(store.Feed ?? NoFeed, filter, time, store.State.LastRefreshFailed);
+        var state = CountdownCalculator.Calculate(store.Feed ?? EventFeed.Empty, filter, time, store.State.LastRefreshFailed);
         return CountdownDisplay.Create(state, store.Feed, store.State, TimeZoneInfo.Local, CultureInfo.CurrentCulture);
     }
 
