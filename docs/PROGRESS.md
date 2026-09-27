@@ -79,3 +79,26 @@ every check.
   Debug builds; use `dotnet build -t:Run` or a Release APK.
 - The API 34 Play Store emulator image hung on every `adb install`; the API 26 image worked. Retry API 34 in Phase 4.
 - Decisions taken without asking are listed in [DECISIONS.md](DECISIONS.md).
+
+## Phase 3 — Branding: complete (2026-09-27)
+
+| Item | Status |
+|------|--------|
+| App icon: sunset + ridgeline background, circuit ribbon + checkered flag foreground (adaptive, inside the 66% safe circle) | Done |
+| Splash: circuit outline on deep purple | Done |
+| Page background: portrait and landscape crops (sky, sun, ridges, lit circuit on Mount Panorama, speed streaks, gum trees), chosen by window shape | Done |
+| Widget background art for Phases 4–5 | Done |
+| Readability overlay + content card; [`tools/dev/check_contrast.py`](../tools/dev/check_contrast.py) passes WCAG AA for every text style | Done |
+| Android status bar and template colours on the palette | Done |
+
+**Verification:**
+- `dotnet build RaceCountdown.slnx`: 0 warnings, 0 errors; all tests pass.
+- `check_contrast.py`: all 8 text styles pass (lowest: muted 12 px footer 4.75:1; gold RACE DAY banner 3.34:1 as large text).
+- Icon checked at 300/96/48 px, square and round, against the 66% safe circle, and in the API 26 app drawer.
+- Countdown page checked on Windows 11 (landscape, 960×640) and the API 26 emulator (portrait, Release APK).
+  The first phone layout clipped the seconds segment; fixed.
+- Not checked on every density on a real device; resizetizer generates all Android densities and Windows scales
+  from the same SVGs.
+
+**Note:** resizetizer kept a stale icon PNG after the SVG changed. Delete `obj/.../resizetizer` after editing art
+(see [assets-src/README.md](../assets-src/README.md)).

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Countdown page background, landscape crop (plan §9). Same scene as background_portrait.svg, framed wide. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#140A2A" />
+      <stop offset="0.22" stop-color="#2B124C" />
+      <stop offset="0.48" stop-color="#B0185E" />
+      <stop offset="0.64" stop-color="#FF6A00" />
+      <stop offset="0.74" stop-color="#FFC21A" />
+    </linearGradient>
+    <radialGradient id="sun" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFF1C2" />
+      <stop offset="0.35" stop-color="#FFC21A" />
+      <stop offset="1" stop-color="#FF6A00" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="streak" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0" />
+      <stop offset="0.8" stop-color="#FFE38A" stop-opacity="0.7" />
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2E6B3A" />
+      <stop offset="1" stop-color="#10291A" />
+    </linearGradient>
+    <linearGradient id="track" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#FFC21A" />
+      <stop offset="1" stop-color="#FF6A00" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#sky)" />
+
+  <g fill="#FFFFFF" opacity="0.6">
+    <circle cx="140" cy="80" r="3" /><circle cx="420" cy="140" r="2" /><circle cx="760" cy="60" r="2.5" />
+    <circle cx="1100" cy="120" r="3" /><circle cx="1400" cy="70" r="2" /><circle cx="1720" cy="150" r="2.5" />
+    <circle cx="1560" cy="230" r="1.8" /><circle cx="260" cy="260" r="1.8" />
+  </g>
+
+  <circle cx="1250" cy="760" r="460" fill="url(#sun)" />
+
+  <g stroke-linecap="round">
+    <line x1="-40" y1="520" x2="900" y2="480" stroke="url(#streak)" stroke-width="6" />
+    <line x1="500" y1="600" x2="1960" y2="540" stroke="url(#streak)" stroke-width="4" />
+    <line x1="-60" y1="660" x2="760" y2="630" stroke="url(#streak)" stroke-width="3" />
+    <line x1="1000" y1="420" x2="1960" y2="390" stroke="url(#streak)" stroke-width="3" />
+  </g>
+
+  <path d="M0,760 C200,720 380,740 560,700 C760,660 960,690 1160,670 C1380,650 1640,690 1920,660 L1920,1080 L0,1080 Z" fill="#7A1450" opacity="0.75" />
+  <path d="M0,820 C260,790 460,810 700,780 C940,750 1220,790 1480,770 C1660,758 1800,770 1920,764 L1920,1080 L0,1080 Z" fill="#4A1040" opacity="0.85" />
+
+  <path d="M0,960 C240,930 520,880 760,820 C940,775 1120,740 1300,760 C1500,782 1700,840 1920,880 L1920,1080 L0,1080 Z" fill="url(#hill)" />
+
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(823 45) scale(0.55)">
+    <path d="M140,1700 L600,1690 Q660,1688 650,1650 L640,1560 Q636,1520 660,1470 Q690,1420 740,1400 Q780,1386 760,1360 Q740,1336 700,1350 Q640,1372 600,1350 Q560,1330 520,1360 Q470,1400 420,1420 L170,1640 Q130,1680 140,1700 Z"
+          stroke="#FF6A00" stroke-width="36" opacity="0.35" />
+    <path d="M140,1700 L600,1690 Q660,1688 650,1650 L640,1560 Q636,1520 660,1470 Q690,1420 740,1400 Q780,1386 760,1360 Q740,1336 700,1350 Q640,1372 600,1350 Q560,1330 520,1360 Q470,1400 420,1420 L170,1640 Q130,1680 140,1700 Z"
+          stroke="url(#track)" stroke-width="13" />
+  </g>
+
+  <path d="M0,1030 C300,1000 640,1016 980,996 C1300,978 1600,1000 1920,990 L1920,1080 L0,1080 Z" fill="#0B1D12" />
+  <g fill="#0B1D12">
+    <path d="M1580,1000 C1570,930 1600,880 1640,870 C1690,860 1710,910 1690,960 C1710,970 1700,1000 1680,1000 Z" />
+    <path d="M160,1040 C140,970 180,930 210,930 C250,930 260,980 240,1040 Z" />
+  </g>
+</svg>

@@ -39,14 +39,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<!-- App Icon (placeholder until Phase 3 artwork) -->
+		<!-- App Icon: sunset + Mount Panorama background, circuit + checkered flag foreground (plan §9) -->
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#2B124C" />
 
-		<!-- Splash Screen (placeholder until Phase 3 artwork) -->
+		<!-- Splash Screen: circuit outline on the deep purple of the palette -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#2B124C" BaseSize="128,128" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
+		<!-- Full-screen art: small base sizes keep the 4x (xxxhdpi / scale-400) PNGs to about 1440 px. -->
+		<MauiImage Update="Resources\Images\background_portrait.svg" BaseSize="360,640" />
+		<MauiImage Update="Resources\Images\background_landscape.svg" BaseSize="640,360" />
+		<MauiImage Update="Resources\Images\widget_background.svg" BaseSize="320,160" />
 
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />

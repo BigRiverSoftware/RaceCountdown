@@ -10,7 +10,7 @@
     <ContentPage.Resources>
         <Style x:Key="SegmentNumber" TargetType="Label">
             <Setter Property="FontFamily" Value="OpenSansSemibold" />
-            <Setter Property="FontSize" Value="48" />
+            <Setter Property="FontSize" Value="40" />
             <Setter Property="TextColor" Value="White" />
             <Setter Property="HorizontalTextAlignment" Value="Center" />
         </Style>
@@ -24,20 +24,31 @@
             <Setter Property="StrokeThickness" Value="0" />
             <Setter Property="StrokeShape" Value="RoundRectangle 12" />
             <Setter Property="BackgroundColor" Value="{StaticResource CountdownPanel}" />
-            <Setter Property="Padding" Value="8,10" />
-            <Setter Property="WidthRequest" Value="84" />
+            <Setter Property="Padding" Value="4,8" />
+            <Setter Property="WidthRequest" Value="62" />
         </Style>
     </ContentPage.Resources>
 
-    <!-- Placeholder sky gradient from plan §9; Phase 3 replaces it with the Mount Panorama artwork. -->
-    <Grid x:Name="Root">
-        <Grid.Background>
-            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                <GradientStop Color="#2B124C" Offset="0.0" />
-                <GradientStop Color="#B0185E" Offset="0.65" />
-                <GradientStop Color="#FF6A00" Offset="1.0" />
-            </LinearGradientBrush>
-        </Grid.Background>
+    <Grid x:Name="Root" BackgroundColor="#140A2A" SizeChanged="OnRootSizeChanged">
+        <!-- Mount Panorama artwork (plan §9), portrait or landscape crop chosen by window shape in code-behind. -->
+        <Image x:Name="BackgroundArt" Source="background_portrait.png" Aspect="AspectFill"
+               SemanticProperties.Description="Sunset over Mount Panorama" />
+
+        <!--
+            Readability: a light overlay keeps the art colourful; the content card (50%) on top of it (at least 25%)
+            gives at least 62% behind the countdown, and the overlay reaches 62% under the footer.
+            tools/dev/check_contrast.py assumes these values.
+        -->
+        <BoxView>
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#40140A2A" Offset="0.0" />
+                    <GradientStop Color="#59140A2A" Offset="0.6" />
+                    <GradientStop Color="#9E140A2A" Offset="0.85" />
+                    <GradientStop Color="#BF140A2A" Offset="1.0" />
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroupList>
@@ -63,6 +74,7 @@
                             <Setter TargetName="MinutesSegment" Property="Border.WidthRequest" Value="150" />
                             <Setter TargetName="SecondsSegment" Property="Border.WidthRequest" Value="150" />
                             <Setter TargetName="MainContent" Property="VerticalStackLayout.Spacing" Value="28" />
+                            <Setter TargetName="Segments" Property="HorizontalStackLayout.Spacing" Value="10" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
@@ -72,7 +84,9 @@
         <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}" RefreshColor="{StaticResource CountdownGold}">
             <ScrollView>
                 <Grid RowDefinitions="*,Auto,*" MinimumHeightRequest="480" Padding="16,32">
-                    <VerticalStackLayout x:Name="MainContent" Grid.Row="1" Spacing="18" HorizontalOptions="Center" MaximumWidthRequest="760">
+                    <Border Grid.Row="1" HorizontalOptions="Center" MaximumWidthRequest="800"
+                            BackgroundColor="#80140A2A" StrokeThickness="0" StrokeShape="RoundRectangle 24" Padding="12,24">
+                    <VerticalStackLayout x:Name="MainContent" Spacing="18">
 
                         <Label x:Name="TitleLabel"
                                Text="{Binding Display.Title}"
@@ -92,7 +106,7 @@
                                HorizontalTextAlignment="Center" />
 
                         <!-- The segmented countdown. Fixed-width segments keep it steady as digits change. -->
-                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="10"
+                        <HorizontalStackLayout x:Name="Segments" HorizontalOptions="Center" Spacing="6"
                                                IsVisible="{Binding Display.ShowCountdown}"
                                                SemanticProperties.Description="{Binding Display.AccessibleText}">
                             <Border x:Name="DaysSegment" Style="{StaticResource Segment}" IsVisible="{Binding Display.ShowDays}">
@@ -132,6 +146,7 @@
                                FontSize="16" TextColor="White"
                                HorizontalTextAlignment="Center" />
                     </VerticalStackLayout>
+                    </Border>
 
                     <VerticalStackLayout Grid.Row="2" VerticalOptions="End" Spacing="6">
                         <HorizontalStackLayout HorizontalOptions="Center" Spacing="12">
