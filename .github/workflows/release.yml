@@ -92,7 +92,7 @@ jobs:
       - name: Restore keystore
         shell: bash
         env:
-          ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
+          ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
@@ -109,13 +109,13 @@ jobs:
 
       # Passwords are passed as env: references so they never appear on the command line or in the build log.
       # A PKCS12 keystore protects the key with the store password, so it is the key password too (as in dev-release.yml).
-      # One build makes both the APK (sideloading) and the AAB (Google Play upload); %3B is an escaped ';'.
+      # One build makes both the APK (sideloading) and the AAB (Google Play upload): Release defaults to
+      # AndroidPackageFormats=aab;apk. Don't pass it as aab%3Bapk: publish then copies only the AAB to publish/.
       - name: Publish signed APK and AAB
         env:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: >
           dotnet publish ${{ env.PROJECT }} -f net10.0-android -c Release
-          -p:AndroidPackageFormats=aab%3Bapk
           -p:ApplicationDisplayVersion=${{ env.VERSION }}
           -p:ApplicationVersion=${{ needs.version.outputs.android-code }}
           -p:AndroidKeyStore=true
