@@ -6,10 +6,9 @@ name: Release
 # Start it by pushing a version tag (v1.2.3 or v1.2.3.4), or run it by hand with a version, which creates the tag.
 #
 # Repository secrets:
-#   ANDROID_KEYSTORE            the release .jks keystore, base64-encoded (required)
-#   ANDROID_KEYSTORE_PASSWORD   keystore (store) password (required)
+#   ANDROID_KEYSTORE            the release PKCS12 keystore (.jks), base64-encoded (required)
+#   ANDROID_KEYSTORE_PASSWORD   keystore password; PKCS12 protects the key with it too (required)
 #   ANDROID_KEY_ALIAS           alias of the signing key in the keystore (required)
-#   ANDROID_KEY_PASSWORD        password of that key (required)
 #   WINDOWS_PFX_BASE64 / WINDOWS_PFX_PASSWORD   code-signing .pfx, subject `CN=Big River Software` (optional;
 #                               without them a new certificate is made each release and users must trust it again)
 
@@ -89,27 +88,31 @@ jobs:
         run: dotnet test tests/RaceCountdown.Core.Tests -c Release
 
       # The keystore goes in the runner's temp folder, never the workspace, and is deleted after publishing.
+      # keytool checks the password and alias here, because the build hides jarsigner's error message.
       - name: Restore keystore
         shell: bash
         env:
           ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          for name in ANDROID_KEYSTORE ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
+          for name in ANDROID_KEYSTORE ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS; do
             if [[ -z "${!name}" ]]; then echo "::error::Repository secret $name is not set."; exit 1; fi
           done
           keystore="$RUNNER_TEMP/maui-release.jks"
           echo "$ANDROID_KEYSTORE" | base64 -d > "$keystore"
+          if ! keytool -list -keystore "$keystore" -storepass:env ANDROID_KEYSTORE_PASSWORD -alias "$ANDROID_KEY_ALIAS" > /dev/null; then
+            echo "::error::Keystore check failed: ANDROID_KEYSTORE, ANDROID_KEYSTORE_PASSWORD or ANDROID_KEY_ALIAS is wrong (see keytool error above)."
+            exit 1
+          fi
           echo "ANDROID_KEYSTORE_FILE=$keystore" >> "$GITHUB_ENV"
 
       # Passwords are passed as env: references so they never appear on the command line or in the build log.
+      # A PKCS12 keystore protects the key with the store password, so it is the key password too (as in dev-release.yml).
       # One build makes both the APK (sideloading) and the AAB (Google Play upload); %3B is an escaped ';'.
       - name: Publish signed APK and AAB
         env:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: >
           dotnet publish ${{ env.PROJECT }} -f net10.0-android -c Release
           -p:AndroidPackageFormats=aab%3Bapk
@@ -119,7 +122,7 @@ jobs:
           -p:AndroidSigningKeyStore="${{ env.ANDROID_KEYSTORE_FILE }}"
           -p:AndroidSigningKeyAlias="${{ secrets.ANDROID_KEY_ALIAS }}"
           -p:AndroidSigningStorePass=env:ANDROID_KEYSTORE_PASSWORD
-          -p:AndroidSigningKeyPass=env:ANDROID_KEY_PASSWORD
+          -p:AndroidSigningKeyPass=env:ANDROID_KEYSTORE_PASSWORD
 
       - name: Collect packages
         shell: pwsh
