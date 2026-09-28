@@ -25,7 +25,42 @@
       "wrap": true
     },
     {
+      "type": "ColumnSet",
+      "$when": "${showSegments}",
+      "horizontalAlignment": "Center",
+      "spacing": "Large",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "auto",
+          "items": [
+            { "type": "TextBlock", "text": "${days}", "size": "ExtraLarge", "weight": "Bolder", "color": "Light", "horizontalAlignment": "Center" },
+            { "type": "TextBlock", "text": "DAYS", "size": "Default", "weight": "Bolder", "color": "Light", "isSubtle": true, "horizontalAlignment": "Center", "spacing": "None" }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "spacing": "ExtraLarge",
+          "items": [
+            { "type": "TextBlock", "text": "${hours}", "size": "ExtraLarge", "weight": "Bolder", "color": "Light", "horizontalAlignment": "Center" },
+            { "type": "TextBlock", "text": "HRS", "size": "Default", "weight": "Bolder", "color": "Light", "isSubtle": true, "horizontalAlignment": "Center", "spacing": "None" }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "spacing": "ExtraLarge",
+          "items": [
+            { "type": "TextBlock", "text": "${minutes}", "size": "ExtraLarge", "weight": "Bolder", "color": "Light", "horizontalAlignment": "Center" },
+            { "type": "TextBlock", "text": "MIN", "size": "Default", "weight": "Bolder", "color": "Light", "isSubtle": true, "horizontalAlignment": "Center", "spacing": "None" }
+          ]
+        }
+      ]
+    },
+    {
       "type": "TextBlock",
+      "$when": "${!showSegments}",
       "text": "${headline}",
       "size": "ExtraLarge",
       "weight": "Bolder",
@@ -35,6 +70,7 @@
     },
     {
       "type": "TextBlock",
+      "$when": "${!showSegments}",
       "text": "${detail}",
       "size": "Large",
       "color": "Light",

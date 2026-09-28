@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="widget_description">Countdown to the next Bathurst 1000</string>
+    <string name="widget_square_description">Days, hours and minutes to the next Bathurst 1000</string>
+    <string name="widget_tiny_description">Days to the next Bathurst 1000, then hours and minutes on race day</string>
+    <string name="widget_days_label">DAYS</string>
+    <string name="widget_hours_label">HRS</string>
+    <string name="widget_minutes_label">MIN</string>
     <string name="widget_offline">Offline · may be out of date</string>
 </resources>

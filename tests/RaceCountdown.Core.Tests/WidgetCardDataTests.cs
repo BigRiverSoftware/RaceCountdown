@@ -24,9 +24,13 @@ public class WidgetCardDataTests
         Assert.Equal("Repco Bathurst 1000", data.GetProperty("title").GetString());
         Assert.Equal("13 days", data.GetProperty("headline").GetString());
         Assert.Equal("04h 07m", data.GetProperty("detail").GetString());
-        Assert.Equal("13", data.GetProperty("compactHeadline").GetString());
-        Assert.Equal("DAYS TO GO", data.GetProperty("compactCaption").GetString());
-        Assert.Equal("13 days, 4 hours until the Repco Bathurst 1000", data.GetProperty("accessibleText").GetString());
+        Assert.True(data.GetProperty("showSegments").GetBoolean());
+        Assert.Equal("13", data.GetProperty("days").GetString());
+        Assert.Equal("04", data.GetProperty("hours").GetString());
+        Assert.Equal("07", data.GetProperty("minutes").GetString());
+        Assert.Equal("13d 04h 07m", data.GetProperty("compactHeadline").GetString());
+        Assert.Equal("TO GO", data.GetProperty("compactCaption").GetString());
+        Assert.Equal("13 days, 4 hours, 7 minutes until the Repco Bathurst 1000", data.GetProperty("accessibleText").GetString());
         Assert.False(data.GetProperty("isStale").GetBoolean());
         Assert.Equal(WidgetCardData.StaleText, data.GetProperty("staleText").GetString());
         Assert.Equal("", data.GetProperty("background").GetString());
@@ -37,6 +41,7 @@ public class WidgetCardDataTests
     {
         var raceDay = DataAt(RaceStart - new TimeSpan(4, 12, 0));
         Assert.Equal(("04:12", "RACE DAY"), (raceDay.GetProperty("headline").GetString(), raceDay.GetProperty("detail").GetString()));
+        Assert.False(raceDay.GetProperty("showSegments").GetBoolean());
 
         var live = DataAt(RaceStart + TimeSpan.FromMinutes(65));
         Assert.Equal("RACE UNDERWAY", live.GetProperty("headline").GetString());
@@ -67,7 +72,7 @@ public class WidgetCardDataTests
     [Fact]
     public void Text_is_json_escaped()
     {
-        var snapshot = new WidgetSnapshot(CountdownPhase.AwaitingSchedule, "Quote \" and \\ slash", null, "TBA", "d", "d", "a", null, null, false);
+        var snapshot = new WidgetSnapshot(CountdownPhase.AwaitingSchedule, "Quote \" and \\ slash", null, null, null, "TBA", "d", "d", "a", null, null, false);
 
         var data = JsonDocument.Parse(WidgetCardData.ToJson(snapshot, null)).RootElement;
 

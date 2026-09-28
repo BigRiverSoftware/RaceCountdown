@@ -12,8 +12,10 @@ namespace RaceCountdown.Widgets;
 
 /// <summary>
 /// The home-screen countdown widget (plan §8.2). Draws <see cref="WidgetSnapshot"/> and holds no countdown logic of
-/// its own. More than 24 hours out it shows days and hours and redraws on an inexact alarm; in the final 24 hours a
-/// chronometer ticks with no wake-ups. All widget instances show the same race, so one alarm serves them all.
+/// its own. More than 24 hours out it shows days, hours and minutes and redraws on an inexact alarm; in the final
+/// 24 hours a chronometer ticks with no wake-ups. All widget instances, including the 2×2
+/// <see cref="SquareCountdownWidgetProvider"/> and the 1×1 <see cref="TinyCountdownWidgetProvider"/> (which has its
+/// own stages, <see cref="TinyWidgetContent"/>), show the same race, so one alarm serves them all.
 /// </summary>
 [BroadcastReceiver(Name = "au.bigriversoftware.bathurstcountdown.CountdownWidgetProvider", Label = "Bathurst Countdown", Exported = true)]
 [IntentFilter([AppWidgetManager.ActionAppwidgetUpdate])]
@@ -53,8 +55,8 @@ public class CountdownWidgetProvider : AppWidgetProvider
 
     public override void OnDisabled(Context? context)
     {
-        // The last widget was removed: stop the alarm and the background refresh.
-        if (context is not null)
+        // The last widget of this kind was removed: once no widget of any kind is left, stop the alarm and the background refresh.
+        if (context is not null && !HasWidgets(context))
         {
             AlarmManager(context).Cancel(RedrawIntent(context));
             FeedRefreshWorker.Cancel(context);
@@ -89,8 +91,10 @@ public class CountdownWidgetProvider : AppWidgetProvider
     private static async Task RedrawAsync(Context context)
     {
         var manager = AppWidgetManager.GetInstance(context)!;
-        var ids = manager.GetAppWidgetIds(new ComponentName(context, Java.Lang.Class.FromType(typeof(CountdownWidgetProvider)))) ?? [];
-        if (ids.Length == 0)
+        var ids = WidgetIds(context, manager, typeof(CountdownWidgetProvider));
+        var squareIds = WidgetIds(context, manager, typeof(SquareCountdownWidgetProvider));
+        var tinyIds = WidgetIds(context, manager, typeof(TinyCountdownWidgetProvider));
+        if (ids.Length == 0 && squareIds.Length == 0 && tinyIds.Length == 0)
         {
             return;
         }
@@ -108,7 +112,27 @@ public class CountdownWidgetProvider : AppWidgetProvider
             manager.UpdateAppWidget(id, CountdownWidgetViews.Build(context, snapshot, manager.GetAppWidgetOptions(id), now));
         }
 
-        ScheduleRedraw(context, WidgetSchedule.NextRedrawUtc(snapshot, now));
+        foreach (var id in squareIds)
+        {
+            manager.UpdateAppWidget(id, CountdownWidgetViews.BuildSquare(context, snapshot, now));
+        }
+
+        var nextRedraw = WidgetSchedule.NextRedrawUtc(snapshot, now);
+        if (tinyIds.Length > 0)
+        {
+            var tiny = TinyWidgetContent.Create(snapshot, now);
+            foreach (var id in tinyIds)
+            {
+                manager.UpdateAppWidget(id, CountdownWidgetViews.BuildTiny(context, tiny, now));
+            }
+
+            if (tiny.NextRedrawUtc is { } tinyRedraw && tinyRedraw < nextRedraw)
+            {
+                nextRedraw = tinyRedraw;
+            }
+        }
+
+        ScheduleRedraw(context, WidgetSchedule.NextAlarmUtc(nextRedraw, now));
         FeedRefreshWorker.EnsureScheduled(context);
 
         // Hourly in race week, straight after the start, and so on (plan §5.3): the alarm-driven redraws are
@@ -119,9 +143,21 @@ public class CountdownWidgetProvider : AppWidgetProvider
         }
     }
 
+    private static int[] WidgetIds(Context context, AppWidgetManager manager, Type provider) =>
+        manager.GetAppWidgetIds(new ComponentName(context, Java.Lang.Class.FromType(provider))) ?? [];
+
+    private static bool HasWidgets(Context context)
+    {
+        var manager = AppWidgetManager.GetInstance(context)!;
+        return WidgetIds(context, manager, typeof(CountdownWidgetProvider)).Length > 0
+            || WidgetIds(context, manager, typeof(SquareCountdownWidgetProvider)).Length > 0
+            || WidgetIds(context, manager, typeof(TinyCountdownWidgetProvider)).Length > 0;
+    }
+
     private static void ScheduleRedraw(Context context, DateTimeOffset whenUtc)
     {
-        // Inexact and non-waking: the widget is only seen when the screen is on, and no exact-alarm permission is needed.
+        // Inexact and non-waking: the widget is only seen when the screen is on, and no exact-alarm permission is
+        // needed. WidgetSchedule.NextAlarmUtc steps towards far-off redraws so the inexact delay stays small.
         AlarmManager(context).Set(AlarmType.Rtc, whenUtc.ToUnixTimeMilliseconds(), RedrawIntent(context));
         Log.Debug(Tag, $"Next widget redraw at {whenUtc:O}");
     }

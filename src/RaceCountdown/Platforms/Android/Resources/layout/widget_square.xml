@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Medium (4×2) countdown widget: title, days/hours/minutes tiles (or headline, or race-day chronometer), detail line (plan §8.2). -->
+<!-- 2×2 countdown widget: title, days/hours/minutes tiles (or headline, or race-day chronometer), detail line. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
@@ -17,10 +17,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_vertical|start"
+        android:gravity="center"
         android:orientation="vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/widget_title"
@@ -28,59 +27,65 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:fontFamily="sans-serif"
-            android:textStyle="bold"
-            android:maxLines="1"
+            android:gravity="center"
+            android:maxLines="2"
             android:textColor="#FFFFFF"
-            android:textSize="14sp" />
+            android:textSize="13sp"
+            android:textStyle="bold" />
 
         <include
             layout="@layout/widget_segments"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:layout_marginTop="6dp" />
+            android:layout_marginTop="8dp" />
 
         <TextView
             android:id="@+id/widget_headline"
             android:layout_width="match_parent"
             android:layout_height="44dp"
-            android:autoSizeMaxTextSize="34sp"
-            android:autoSizeMinTextSize="16sp"
+            android:autoSizeMaxTextSize="30sp"
+            android:autoSizeMinTextSize="14sp"
             android:autoSizeTextType="uniform"
             android:fontFamily="sans-serif"
-            android:textStyle="bold"
+            android:gravity="center"
             android:maxLines="1"
             android:textColor="#FFFFFF"
-            android:textSize="34sp" />
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
         <Chronometer
             android:id="@+id/widget_chronometer"
             android:layout_width="match_parent"
             android:layout_height="44dp"
-            android:autoSizeMaxTextSize="34sp"
-            android:autoSizeMinTextSize="16sp"
+            android:autoSizeMaxTextSize="30sp"
+            android:autoSizeMinTextSize="14sp"
             android:autoSizeTextType="uniform"
             android:fontFamily="sans-serif"
-            android:textStyle="bold"
+            android:gravity="center"
             android:textColor="#FFFFFF"
-            android:textSize="34sp"
+            android:textSize="30sp"
+            android:textStyle="bold"
             android:visibility="gone" />
 
         <TextView
             android:id="@+id/widget_detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
             android:letterSpacing="0.05"
-            android:maxLines="1"
+            android:maxLines="2"
             android:textColor="#FFC21F"
-            android:textSize="14sp" />
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/widget_stale"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="@string/widget_offline"
             android:textColor="#E6FFFFFF"
-            android:textSize="11sp"
+            android:textSize="10sp"
             android:visibility="gone" />
     </LinearLayout>
 </FrameLayout>

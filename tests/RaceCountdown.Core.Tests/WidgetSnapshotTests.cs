@@ -20,10 +20,10 @@ public class WidgetSnapshotTests
 
         Assert.Equal(CountdownPhase.Counting, snapshot.Phase);
         Assert.Equal("Repco Bathurst 1000", snapshot.Title);
-        Assert.Equal(13, snapshot.Days);
+        Assert.Equal((13, 4, 7), (snapshot.Days, snapshot.Hours, snapshot.Minutes));
         Assert.Equal("13 days", snapshot.Headline);
         Assert.Equal("04h 07m", snapshot.Detail);
-        Assert.Equal("13 days, 4 hours until the Repco Bathurst 1000", snapshot.AccessibleText);
+        Assert.Equal("13 days, 4 hours, 7 minutes until the Repco Bathurst 1000", snapshot.AccessibleText);
         Assert.Equal(RaceStart, snapshot.TargetUtc);
         Assert.Equal(RaceStart.AddHours(-24), snapshot.NextPhaseChangeUtc);
         Assert.False(snapshot.IsStale);
@@ -32,10 +32,10 @@ public class WidgetSnapshotTests
     [Fact]
     public void Counting_uses_singular_units()
     {
-        var snapshot = SnapshotAt(RaceStart - new TimeSpan(1, 1, 0, 0));
+        var snapshot = SnapshotAt(RaceStart - new TimeSpan(1, 1, 1, 0));
 
         Assert.Equal("1 day", snapshot.Headline);
-        Assert.Equal("1 day, 1 hour until the Repco Bathurst 1000", snapshot.AccessibleText);
+        Assert.Equal("1 day, 1 hour, 1 minute until the Repco Bathurst 1000", snapshot.AccessibleText);
     }
 
     [Fact]
@@ -45,6 +45,8 @@ public class WidgetSnapshotTests
 
         Assert.Equal(CountdownPhase.RaceDay, snapshot.Phase);
         Assert.Null(snapshot.Days);
+        Assert.Null(snapshot.Hours);
+        Assert.Null(snapshot.Minutes);
         Assert.Equal("04:12", snapshot.Headline);
         Assert.Equal("RACE DAY", snapshot.Detail);
         Assert.Equal("Race day: 4 hours, 12 minutes until the Repco Bathurst 1000", snapshot.AccessibleText);

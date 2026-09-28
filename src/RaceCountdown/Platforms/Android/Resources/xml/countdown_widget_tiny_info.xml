@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  1×1 countdown widget metadata: its own entry in the widget picker, drawn and scheduled by the same code as the
+  other widgets (CountdownWidgetProvider). updatePeriodMillis is 0 for the same reason as countdown_widget_info.xml.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/widget_tiny_description"
+    android:initialLayout="@layout/widget_tiny"
+    android:minHeight="40dp"
+    android:minWidth="40dp"
+    android:minResizeHeight="40dp"
+    android:minResizeWidth="40dp"
+    android:previewImage="@drawable/widget_background"
+    android:previewLayout="@layout/widget_tiny"
+    android:resizeMode="horizontal|vertical"
+    android:targetCellHeight="1"
+    android:targetCellWidth="1"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen" />

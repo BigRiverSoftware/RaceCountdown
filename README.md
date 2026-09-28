@@ -32,8 +32,11 @@ App id: `au.bigriversoftware.bathurstcountdown`
 - **Updates itself.** Race times come from a public event feed built from public web sources. After a race starts, the app moves on to the next one without an app update.
 - **Works offline.** The last downloaded schedule is cached, and the app ships with a built-in snapshot for first launch.
 - **Home-screen widgets:**
-  - **Android:** resizable App Widget. It ticks live during the final 24 hours.
-  - **Windows 11:** a Widgets Board widget, built with Adaptive Cards.
+  - **Android:** three widgets in the picker:
+    - A resizable widget (4×2 down to 2×1) showing days, hours and minutes, ticking live during the final 24 hours.
+    - A 2×2 widget showing the same.
+    - A 1×1 widget that shows days to go, then hours:minutes on race day, then a live minutes:seconds countdown for the final 30 minutes.
+  - **Windows 11:** a Widgets Board widget (small, medium and large) showing days, hours and minutes, built with Adaptive Cards.
 - **Artwork:** a stopwatch icon with the Mount Panorama circuit on its face, over a sunny day on the Mountain: blue sky, green hills, a red-and-white kerb and orange race-timing accents. See the [design system](docs/design-system/README.md).
 - **Ready for more events.** The data model supports multiple series, tracks and events worldwide. v1 shows only Bathurst.
 

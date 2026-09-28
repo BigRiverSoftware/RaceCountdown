@@ -14,21 +14,21 @@ public class WidgetScheduleTests
             "Bathurst 1000");
 
     [Fact]
-    public void Counting_redraws_just_after_the_hours_shown_drop()
+    public void Counting_redraws_just_after_the_minutes_shown_drop()
     {
         var now = RaceStart - new TimeSpan(13, 4, 7, 30);
 
         var next = WidgetSchedule.NextRedrawUtc(SnapshotAt(now), now);
 
-        Assert.Equal(RaceStart - new TimeSpan(13, 4, 0, 0) + TimeSpan.FromSeconds(1), next);
-        Assert.Equal("4 hours", SnapshotAt(next - TimeSpan.FromSeconds(1)).ShortDetail);
-        Assert.Equal("3 hours", SnapshotAt(next).ShortDetail);
+        Assert.Equal(RaceStart - new TimeSpan(13, 4, 7, 0) + TimeSpan.FromSeconds(1), next);
+        Assert.Equal("07", SnapshotAt(next - TimeSpan.FromSeconds(1)).MinutesText);
+        Assert.Equal("06", SnapshotAt(next).MinutesText);
     }
 
     [Fact]
-    public void Counting_on_an_exact_hour_redraws_a_second_later()
+    public void Counting_on_an_exact_minute_redraws_a_second_later()
     {
-        var now = RaceStart - TimeSpan.FromHours(30);
+        var now = RaceStart - new TimeSpan(30, 5, 0);
 
         Assert.Equal(now + TimeSpan.FromSeconds(1), WidgetSchedule.NextRedrawUtc(SnapshotAt(now), now));
     }
@@ -36,7 +36,7 @@ public class WidgetScheduleTests
     [Fact]
     public void Counting_just_before_race_day_redraws_at_the_phase_change()
     {
-        var now = RaceStart - TimeSpan.FromHours(24.5);
+        var now = RaceStart - TimeSpan.FromHours(24) - TimeSpan.FromSeconds(30);
 
         Assert.Equal(RaceStart - TimeSpan.FromHours(24), WidgetSchedule.NextRedrawUtc(SnapshotAt(now), now));
     }
@@ -133,14 +133,73 @@ public class WidgetScheduleTests
     }
 
     [Fact]
-    public void Counting_short_detail_uses_singular()
+    public void Alarm_within_a_minute_is_set_for_the_redraw_itself()
     {
-        Assert.Equal("1 hour", SnapshotAt(RaceStart - new TimeSpan(3, 1, 20, 0)).ShortDetail);
+        var now = RaceStart.AddDays(-3);
+
+        Assert.Equal(now + TimeSpan.FromMinutes(1), WidgetSchedule.NextAlarmUtc(now + TimeSpan.FromMinutes(1), now));
+        Assert.Equal(now + TimeSpan.FromSeconds(5), WidgetSchedule.NextAlarmUtc(now + TimeSpan.FromSeconds(5), now));
+    }
+
+    [Fact]
+    public void Alarm_further_ahead_steps_a_quarter_of_the_way_with_a_30_second_minimum()
+    {
+        var now = RaceStart.AddDays(-3);
+
+        Assert.Equal(now + TimeSpan.FromHours(6), WidgetSchedule.NextAlarmUtc(now + TimeSpan.FromHours(24), now));
+        Assert.Equal(now + TimeSpan.FromSeconds(30), WidgetSchedule.NextAlarmUtc(now + TimeSpan.FromSeconds(90), now));
+    }
+
+    [Fact]
+    public void Alarm_steps_reach_a_far_redraw_at_most_45_seconds_late_even_when_every_alarm_is_as_late_as_android_allows()
+    {
+        var redraw = RaceStart;
+        var now = RaceStart - TimeSpan.FromHours(24);
+        var alarms = 0;
+
+        while (true)
+        {
+            var alarm = WidgetSchedule.NextAlarmUtc(redraw, now);
+            alarms++;
+
+            // Android may deliver an inexact alarm up to 75% of its lead time late (alarms under 10 s ahead are not delayed).
+            var lead = alarm - now;
+            var delivered = alarm + (lead < TimeSpan.FromSeconds(10) ? TimeSpan.Zero : lead * 0.75);
+
+            if (alarm == redraw)
+            {
+                Assert.True(delivered - redraw <= TimeSpan.FromSeconds(45), $"Redraw {delivered - redraw} late");
+                break;
+            }
+
+            Assert.True(delivered < redraw, "A step went off after the redraw was due");
+            now = delivered;
+        }
+
+        Assert.InRange(alarms, 2, 40);
+    }
+
+    [Fact]
+    public void Counting_segments_are_zero_padded_except_days()
+    {
+        var snapshot = SnapshotAt(RaceStart - new TimeSpan(3, 1, 5, 0));
+
+        Assert.True(snapshot.ShowsSegments);
+        Assert.Equal(("3", "01", "05"), (snapshot.DaysText, snapshot.HoursText, snapshot.MinutesText));
+    }
+
+    [Fact]
+    public void Segments_are_only_shown_while_counting()
+    {
+        var snapshot = SnapshotAt(RaceStart - TimeSpan.FromHours(5));
+
+        Assert.False(snapshot.ShowsSegments);
+        Assert.Equal(("", "", ""), (snapshot.DaysText, snapshot.HoursText, snapshot.MinutesText));
     }
 
     [Theory]
-    [InlineData(-13 * 24 - 4, "13", "DAYS TO GO")]
-    [InlineData(-30, "1", "DAY TO GO")]
+    [InlineData(-13 * 24 - 4.5, "13d 04h 30m", "TO GO")]
+    [InlineData(-30, "1d 06h 00m", "TO GO")]
     [InlineData(-5, "05:00", "RACE DAY")]
     [InlineData(1, "LIVE", "RACE UNDERWAY")]
     public void Compact_texts(double hoursFromStart, string headline, string caption)
