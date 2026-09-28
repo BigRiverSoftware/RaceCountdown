@@ -82,9 +82,9 @@
 	     The keystore is PKCS12, which protects the key with the store password, so that is the key password too.
 	     CI (release.yml) passes its own AndroidSigning* properties on the command line, which take precedence. -->
 	<Import Project="$(MSBuildThisFileDirectory)..\..\android-signing.props" Condition="Exists('$(MSBuildThisFileDirectory)..\..\android-signing.props')" />
-	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' and '$(Configuration)' == 'Release' and '$(AndroidSigningKeyStore)' == '' and Exists('$(MSBuildThisFileDirectory)..\..\android-dev.jks')">
+	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' and '$(Configuration)' == 'Release' and '$(AndroidSigningKeyStore)' == '' and Exists('$(MSBuildThisFileDirectory)..\..\brs.jks')">
 		<AndroidKeyStore>true</AndroidKeyStore>
-		<AndroidSigningKeyStore>$(MSBuildThisFileDirectory)..\..\android-dev.jks</AndroidSigningKeyStore>
+		<AndroidSigningKeyStore>$(MSBuildThisFileDirectory)..\..\brs.jks</AndroidSigningKeyStore>
 		<AndroidSigningStorePass Condition="'$(AndroidSigningStorePass)' == ''">env:ANDROID_KEYSTORE_PASSWORD</AndroidSigningStorePass>
 		<AndroidSigningKeyAlias>brsapp</AndroidSigningKeyAlias>
 		<AndroidSigningKeyPass Condition="'$(AndroidSigningKeyPass)' == ''">env:ANDROID_KEYSTORE_PASSWORD</AndroidSigningKeyPass>
