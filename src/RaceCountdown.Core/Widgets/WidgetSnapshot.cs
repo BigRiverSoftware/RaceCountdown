@@ -8,7 +8,7 @@ namespace RaceCountdown.Core.Widgets;
 /// Platform-neutral, ready-to-draw widget content (plan §8.1). The Android and Windows widgets render
 /// this and contain no countdown logic of their own.
 /// </summary>
-/// <param name="Title">Event name, e.g. "Repco Bathurst 1000".</param>
+/// <param name="Title">Event name, e.g. "Bathurst 1000".</param>
 /// <param name="Days">Whole days to go while counting; null in the other phases.</param>
 /// <param name="Hours">Hours to go after the whole days while counting; null in the other phases.</param>
 /// <param name="Minutes">Minutes to go after the whole hours while counting; null in the other phases.</param>

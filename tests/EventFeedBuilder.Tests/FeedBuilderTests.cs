@@ -5,7 +5,7 @@ namespace EventFeedBuilder.Tests;
 public class FeedBuilderTests
 {
     private static readonly CalendarEntry Bathurst2026 = new(
-        "2026-bathurst-1000", "2026 Repco Bathurst 1000", "Bathurst, NSW",
+        "2026-bathurst-1000", "2026 Bathurst 1000", "Bathurst, NSW",
         new DateTimeOffset(2026, 10, 8, 6, 0, 0, TimeSpan.FromHours(11)),
         new DateTimeOffset(2026, 10, 11, 18, 0, 0, TimeSpan.FromHours(11)));
 
@@ -27,7 +27,7 @@ public class FeedBuilderTests
 
         var ev = Assert.Single(feed.Events);
         Assert.Equal("supercars-2026-bathurst-1000", ev.Id);
-        Assert.Equal("Repco Bathurst 1000", ev.Name);
+        Assert.Equal("Bathurst 1000", ev.Name);
         Assert.Equal(EventStatus.Confirmed, ev.Status);
         Assert.Equal((new DateOnly(2026, 10, 8), new DateOnly(2026, 10, 11)), (ev.StartDate!.Value, ev.EndDate!.Value));
         var race = Assert.Single(ev.Sessions);
@@ -109,7 +109,7 @@ public class FeedBuilderTests
         var baseOverrides = Fixtures.Overrides();
         var delayed = new Session("race-30", "Race 30", SessionType.Race,
             new DateTimeOffset(2026, 10, 11, 2, 0, 0, TimeSpan.Zero), "2026-10-11T13:00:00", TimeSpan.FromHours(7));
-        var replacement = new RaceEvent("supercars-2026-bathurst-1000", "supercars", "mount-panorama", "Repco Bathurst 1000",
+        var replacement = new RaceEvent("supercars-2026-bathurst-1000", "supercars", "mount-panorama", "Bathurst 1000",
             new DateOnly(2026, 10, 8), new DateOnly(2026, 10, 11), EventStatus.Confirmed, [delayed]);
 
         var feed = FeedBuilder.Build([Bathurst2026], sessions, baseOverrides with { Events = [replacement] }, Fixtures.SavedOn);

@@ -27,7 +27,7 @@ overridden event is also exempt from the "start time moved by more than 7 days" 
     "id": "supercars-2026-bathurst-1000",
     "seriesId": "supercars",
     "trackId": "mount-panorama",
-    "name": "Repco Bathurst 1000",
+    "name": "Bathurst 1000",
     "startDate": "2026-10-08",
     "endDate": "2026-10-11",
     "status": "Confirmed",

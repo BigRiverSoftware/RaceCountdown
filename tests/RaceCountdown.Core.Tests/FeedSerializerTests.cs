@@ -11,7 +11,7 @@ public class FeedSerializerTests
         {
           "schemaVersion": 1,
           "generatedUtc": "2026-09-27T00:00:00Z",
-          "series": [{ "id": "supercars", "name": "Repco Supercars Championship", "shortName": "Supercars", "accentColour": "#E10600" }],
+          "series": [{ "id": "supercars", "name": "Supercars Championship", "shortName": "Supercars", "accentColour": "#E10600" }],
           "tracks": [{ "id": "mount-panorama", "name": "Mount Panorama Circuit", "location": "Bathurst, NSW",
                        "countryCode": "AU", "timeZoneId": "Australia/Sydney", "latitude": -33.4475, "longitude": 149.5570 }],
           "events": [{

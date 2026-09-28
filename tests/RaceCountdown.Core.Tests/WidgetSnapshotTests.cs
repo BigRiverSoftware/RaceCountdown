@@ -19,11 +19,11 @@ public class WidgetSnapshotTests
         var snapshot = SnapshotAt(RaceStart - new TimeSpan(13, 4, 7, 30));
 
         Assert.Equal(CountdownPhase.Counting, snapshot.Phase);
-        Assert.Equal("Repco Bathurst 1000", snapshot.Title);
+        Assert.Equal("Bathurst 1000", snapshot.Title);
         Assert.Equal((13, 4, 7), (snapshot.Days, snapshot.Hours, snapshot.Minutes));
         Assert.Equal("13 days", snapshot.Headline);
         Assert.Equal("04h 07m", snapshot.Detail);
-        Assert.Equal("13 days, 4 hours, 7 minutes until the Repco Bathurst 1000", snapshot.AccessibleText);
+        Assert.Equal("13 days, 4 hours, 7 minutes until the Bathurst 1000", snapshot.AccessibleText);
         Assert.Equal(RaceStart, snapshot.TargetUtc);
         Assert.Equal(RaceStart.AddHours(-24), snapshot.NextPhaseChangeUtc);
         Assert.False(snapshot.IsStale);
@@ -35,7 +35,7 @@ public class WidgetSnapshotTests
         var snapshot = SnapshotAt(RaceStart - new TimeSpan(1, 1, 1, 0));
 
         Assert.Equal("1 day", snapshot.Headline);
-        Assert.Equal("1 day, 1 hour, 1 minute until the Repco Bathurst 1000", snapshot.AccessibleText);
+        Assert.Equal("1 day, 1 hour, 1 minute until the Bathurst 1000", snapshot.AccessibleText);
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public class WidgetSnapshotTests
         Assert.Null(snapshot.Minutes);
         Assert.Equal("04:12", snapshot.Headline);
         Assert.Equal("RACE DAY", snapshot.Detail);
-        Assert.Equal("Race day: 4 hours, 12 minutes until the Repco Bathurst 1000", snapshot.AccessibleText);
+        Assert.Equal("Race day: 4 hours, 12 minutes until the Bathurst 1000", snapshot.AccessibleText);
         Assert.Equal(RaceStart, snapshot.NextPhaseChangeUtc);
     }
 
@@ -67,7 +67,7 @@ public class WidgetSnapshotTests
         Assert.Equal(CountdownPhase.Live, snapshot.Phase);
         Assert.Equal("RACE UNDERWAY", snapshot.Headline);
         Assert.Equal("Green flag 1:23 ago", snapshot.Detail);
-        Assert.Equal("The Repco Bathurst 1000 is underway", snapshot.AccessibleText);
+        Assert.Equal("The Bathurst 1000 is underway", snapshot.AccessibleText);
         Assert.Equal(RaceStart.AddHours(7), snapshot.NextPhaseChangeUtc);
     }
 
