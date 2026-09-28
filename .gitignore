@@ -430,3 +430,9 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
+
+# Google Developer CErtificates
+*.jks
+
+# Local Android signing passwords (see android-signing.props.example)
+android-signing.props
