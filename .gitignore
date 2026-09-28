@@ -433,3 +433,6 @@ FodyWeavers.xsd
 
 # Google Developer CErtificates
 *.jks
+
+# Local Android signing passwords (see android-signing.props.example)
+android-signing.props

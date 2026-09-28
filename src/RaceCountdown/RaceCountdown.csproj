@@ -71,6 +71,19 @@
 		<PackageReference Include="Xamarin.AndroidX.Work.Runtime" Version="2.10.3" />
 	</ItemGroup>
 
+	<!-- Android Release signing with the local keystore in the repo root (gitignored, so only present on machines that have it).
+	     Passwords come from the gitignored android-signing.props in the repo root (copy android-signing.props.example),
+	     otherwise from the ANDROID_KEYSTORE_PASSWORD / ANDROID_KEY_PASSWORD environment variables. Never store them here.
+	     CI (release.yml) passes its own AndroidSigning* properties on the command line, which take precedence. -->
+	<Import Project="$(MSBuildThisFileDirectory)..\..\android-signing.props" Condition="Exists('$(MSBuildThisFileDirectory)..\..\android-signing.props')" />
+	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' and '$(Configuration)' == 'Release' and '$(AndroidSigningKeyStore)' == '' and Exists('$(MSBuildThisFileDirectory)..\..\android-dev.jks')">
+		<AndroidKeyStore>true</AndroidKeyStore>
+		<AndroidSigningKeyStore>$(MSBuildThisFileDirectory)..\..\android-dev.jks</AndroidSigningKeyStore>
+		<AndroidSigningStorePass Condition="'$(AndroidSigningStorePass)' == ''">env:ANDROID_KEYSTORE_PASSWORD</AndroidSigningStorePass>
+		<AndroidSigningKeyAlias>brsapp</AndroidSigningKeyAlias>
+		<AndroidSigningKeyPass Condition="'$(AndroidSigningKeyPass)' == ''">env:ANDROID_KEY_PASSWORD</AndroidSigningKeyPass>
+	</PropertyGroup>
+
 	<!-- Windows widget provider (plan §8.3, D5): a custom Main that can start as a COM server instead of the UI,
 	     source-generated COM for the class factory, and the Adaptive Card templates. -->
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
