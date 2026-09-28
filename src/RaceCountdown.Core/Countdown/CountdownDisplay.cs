@@ -9,7 +9,7 @@ namespace RaceCountdown.Core.Countdown;
 /// Ready-to-bind text for the countdown page (plan §7), built once per tick. Keeps formatting out of the view model
 /// so it can be unit-tested.
 /// </summary>
-/// <param name="Subtitle">Series and circuit, e.g. "Repco Supercars Championship · Mount Panorama Circuit, Bathurst, NSW".</param>
+/// <param name="Subtitle">Series and circuit, e.g. "Supercars Championship · Mount Panorama Circuit, Bathurst, NSW".</param>
 /// <param name="ShowCountdown">True while counting down (the segmented days/hours/minutes/seconds block is shown).</param>
 /// <param name="ShowDays">False on race day, when the days segment would always be zero.</param>
 /// <param name="Banner">"RACE DAY", "RACE UNDERWAY" or "TBA"; null while counting.</param>

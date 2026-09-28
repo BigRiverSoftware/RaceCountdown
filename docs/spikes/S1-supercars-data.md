@@ -30,7 +30,7 @@ Objects with a `slug` and a `startDate`:
 | Field | Example |
 |-------|---------|
 | `slug` | `2026-bathurst-1000` |
-| `title` | `2026 Repco Bathurst 1000` |
+| `title` | `2026 <sponsor> Bathurst 1000` (the feed publishes `Bathurst 1000`) |
 | `location` | `Bathurst, NSW` |
 | `startDate` | `2026-10-08T06:00:00.000+11:00` |
 | `endDate` | `2026-10-11T18:00:00.000+11:00` |
@@ -47,10 +47,10 @@ Objects with `name`, `type`, `startDate` and `series`:
 | `startDate` | `2026-10-11T11:30:00.000+11:00` |
 | `endDate` | `2026-10-11T18:30:00.000+11:00` |
 | `durationLabel` | `161 laps` |
-| `series.name` | `Repco Supercars Championship` |
+| `series.name` | `<sponsor> Supercars Championship` |
 
 - Support categories (Super2, Carrera Cup, Touring Car Masters and others) are sessions on the same page with a **different `series.name`**.
-- Main-race filter (D12): `series.name == "Repco Supercars Championship"` and `type == "Race"`. In 2026 exactly one session matches.
+- Main-race filter (D12): `series.name` ends with `"Supercars Championship"` (the sponsor prefix can change) and `type == "Race"`. In 2026 exactly one session matches.
 - `estimatedDuration` = `endDate − startDate` (7 hours for 2026).
 
 ## Decision for `EventFeedBuilder`

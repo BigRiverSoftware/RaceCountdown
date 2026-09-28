@@ -5,7 +5,7 @@ namespace RaceCountdown.Core.Tests;
 /// <summary>Builders for in-memory feeds. The defaults are the real 2026 Bathurst 1000.</summary>
 internal static class TestFeeds
 {
-    public static readonly Series Supercars = new("supercars", "Repco Supercars Championship", "Supercars", "#E10600");
+    public static readonly Series Supercars = new("supercars", "Supercars Championship", "Supercars", "#E10600");
 
     public static readonly Track MountPanorama = new(
         "mount-panorama", "Mount Panorama Circuit", "Bathurst, NSW", "AU", "Australia/Sydney", -33.4475, 149.557);
@@ -23,7 +23,7 @@ internal static class TestFeeds
         int year,
         DateTimeOffset raceStartUtc,
         EventStatus status = EventStatus.Confirmed,
-        string name = "Repco Bathurst 1000")
+        string name = "Bathurst 1000")
     {
         var raceDay = TrackTime.ToLocalDate(raceStartUtc, TrackTime.FindZone(MountPanorama.TimeZoneId));
         return new RaceEvent(
