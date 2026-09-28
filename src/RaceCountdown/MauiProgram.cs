@@ -18,8 +18,11 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .ConfigureFonts(fonts =>
             {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                // Poppins (docs/design-system): Bold for the countdown and headings, Bold Italic for the wordmark.
+                fonts.AddFont("Poppins-Regular.ttf", "PoppinsRegular");
+                fonts.AddFont("Poppins-SemiBold.ttf", "PoppinsSemibold");
+                fonts.AddFont("Poppins-Bold.ttf", "PoppinsBold");
+                fonts.AddFont("Poppins-BoldItalic.ttf", "PoppinsBoldItalic");
             });
 
         var services = builder.Services;

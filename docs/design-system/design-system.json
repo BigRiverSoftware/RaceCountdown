@@ -1,0 +1,8 @@
+{"v":3,"layout":"files","createdOnFiles":{"at":"2026-09-28T01:36:27Z","v":1},"title":"Bathurst Countdown","namespace":"BathurstCountdown","libraries":[],"sections":{},"groups":["App icon","Backgrounds"],
+"assetGroups":{
+ "App icon":{"name":"App icon","tile":"l","order":["bathurst-icon-1024.png"],"files":{"bathurst-icon-1024.png":{"name":"bathurst-icon-1024.png","blob":"d9d9219a61d58efae80ae48c42fdb1a0","size":287744,"type":"image/png"}}},
+ "Backgrounds":{"name":"Backgrounds","tile":"l","order":["bathurst-background-portrait.png","bathurst-background-landscape.png"],"files":{
+   "bathurst-background-portrait.png":{"name":"bathurst-background-portrait.png","blob":"70420070abb3f840a498df97b41238f8","size":101869,"type":"image/png"},
+   "bathurst-background-landscape.png":{"name":"bathurst-background-landscape.png","blob":"bc4fd051d7a46b3e2ba20aa12509c3ff","size":151251,"type":"image/png"}}}},
+"blobs":{},"docs":{"readme":"project/README.md","sections":[]},
+"lastChange":{"by":"Steve","at":"2026-09-28T01:46:19Z","via":"Cowork","note":"Stopwatch icon with the traced Mount Panorama circuit; added backgrounds and new palette"}}

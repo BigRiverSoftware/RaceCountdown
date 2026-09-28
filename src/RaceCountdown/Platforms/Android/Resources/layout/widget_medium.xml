@@ -27,7 +27,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="sans-serif"
+            android:textStyle="bold"
             android:maxLines="1"
             android:textColor="#FFFFFF"
             android:textSize="14sp" />
@@ -39,7 +40,8 @@
             android:autoSizeMaxTextSize="34sp"
             android:autoSizeMinTextSize="16sp"
             android:autoSizeTextType="uniform"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="sans-serif"
+            android:textStyle="bold"
             android:maxLines="1"
             android:textColor="#FFFFFF"
             android:textSize="34sp" />
@@ -51,7 +53,8 @@
             android:autoSizeMaxTextSize="34sp"
             android:autoSizeMinTextSize="16sp"
             android:autoSizeTextType="uniform"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="sans-serif"
+            android:textStyle="bold"
             android:textColor="#FFFFFF"
             android:textSize="34sp"
             android:visibility="gone" />
@@ -62,7 +65,7 @@
             android:layout_height="wrap_content"
             android:letterSpacing="0.05"
             android:maxLines="1"
-            android:textColor="#FFC21A"
+            android:textColor="#FFC21F"
             android:textSize="14sp" />
 
         <TextView

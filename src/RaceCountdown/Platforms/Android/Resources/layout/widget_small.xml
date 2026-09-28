@@ -29,7 +29,8 @@
             android:autoSizeMinTextSize="12sp"
             android:autoSizeTextType="uniform"
             android:gravity="center"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="sans-serif"
+            android:textStyle="bold"
             android:maxLines="1"
             android:textColor="#FFFFFF"
             android:textSize="28sp" />
@@ -42,7 +43,8 @@
             android:autoSizeMinTextSize="12sp"
             android:autoSizeTextType="uniform"
             android:gravity="center"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="sans-serif"
+            android:textStyle="bold"
             android:textColor="#FFFFFF"
             android:textSize="22sp"
             android:visibility="gone" />
@@ -54,7 +56,7 @@
             android:ellipsize="end"
             android:letterSpacing="0.08"
             android:maxLines="1"
-            android:textColor="#FFC21A"
+            android:textColor="#FFC21F"
             android:textSize="10sp" />
     </LinearLayout>
 </FrameLayout>
