@@ -23,7 +23,7 @@ A .NET MAUI app by **Big River Software** for **Windows** and **Android** with o
 
 App id: `au.bigriversoftware.bathurstcountdown`
 
-> **Status:** The app and both home-screen widgets are complete, and the race feed is live. Signed sideload releases on GitHub Releases (Phase 6) are next. See [docs/PROGRESS.md](docs/PROGRESS.md) for progress and [docs/PLAN.md](docs/PLAN.md) for the full plan.
+> **Status:** The app and both home-screen widgets are complete, and the race feed is live. Signed sideload releases are on GitHub Releases. Applications are pending to place this app into the app stores. See [docs/PROGRESS.md](docs/PROGRESS.md) for progress and [docs/PLAN.md](docs/PLAN.md) for the full plan.
 
 ## Features
 
@@ -135,7 +135,7 @@ The feed schema and the rules for validating and publishing are in [docs/PLAN.md
 |----------|---------|--------|
 | [Release](.github/workflows/release.yml) | Push a `v1.2.3` or `v1.2.3.4` tag, or run by hand | APK and MSIX signed with the release keys, with `SHA256SUMS.txt`, on a GitHub Release |
 | [Developer test build](.github/workflows/dev-release.yml) | Run by hand | Test-signed APK and MSIX on a GitHub pre-release |
-| [Publish feed](.github/workflows/publish-feed.yml) | Daily schedule, pushes to `feed/` or the builder, or run by hand | `events.json` on GitHub Pages |
+| [Publish feed](.github/workflows/publish-feed.yml) | Daily schedule, or run by hand | `events.json` on GitHub Pages |
 
 ## Project structure
 

@@ -6,14 +6,6 @@ name: Publish feed
 on:
   schedule:
     - cron: '17 18 * * *'        # Daily (04:17/05:17 in Sydney).
-    - cron: '17 0,6,12 * * *'    # Extra runs that only publish in race week.
-  push:
-    branches: [ dev ]
-    paths:
-      - feed/**
-      - tools/EventFeedBuilder/**
-      - src/RaceCountdown.Core/**
-      - .github/workflows/publish-feed.yml
   workflow_dispatch:
 
 permissions:
@@ -49,11 +41,7 @@ jobs:
       - name: Build and check the feed
         id: feed
         run: |
-          args=(--out site --previous previous.json)
-          if [ "${{ github.event.schedule }}" = "17 0,6,12 * * *" ]; then
-            args+=(--race-week-only)
-          fi
-          dotnet run --project tools/EventFeedBuilder -c Release -- "${args[@]}"
+          dotnet run --project tools/EventFeedBuilder -c Release -- --out site --previous previous.json
           if [ -f site/events.json ]; then
             cp feed/events.schema.json site/
             echo "publish=true" >> "$GITHUB_OUTPUT"
