@@ -192,6 +192,16 @@
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                     </Border>
+
+                    <!-- Copyright at the very bottom of the screen, in very small print. It sits over the road at the
+                         foot of the art, so a translucent Ink pill keeps it readable. -->
+                    <Border Grid.Row="2" VerticalOptions="End" HorizontalOptions="Center" Margin="0,16,0,-24"
+                            StrokeThickness="0" StrokeShape="RoundRectangle 6" Padding="8,2"
+                            BackgroundColor="#99101A2E">
+                        <Label Text="Copyright (c) 2026 Big River Software"
+                               FontSize="10" TextColor="{StaticResource OnNavyMuted}"
+                               HorizontalTextAlignment="Center" />
+                    </Border>
                 </Grid>
             </ScrollView>
         </RefreshView>
