@@ -1,0 +1,34 @@
+<!-- @dsCard height=288 -->
+<style>
+  html,body{margin:0;background:var(--surface);}
+  .wrap{position:relative;width:960px;height:288px;overflow:hidden;background:var(--surface);font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+  svg{position:absolute;left:0;top:0}
+  .sky{fill:var(--sky-blue)} .navy{fill:var(--dial-navy)} .orange{fill:var(--stopwatch-orange)}
+  .yellow{fill:var(--dial-yellow)} .green{fill:var(--grass-green)} .ink{fill:var(--ink)} .white{fill:var(--surface)}
+  .tile{rx:var(--radius-md)} .sq{rx:0}
+  .name{position:absolute;left:40px;bottom:64px;max-width:440px;margin:0;font-size:80px;line-height:.95;font-weight:700;color:var(--ink);letter-spacing:-1px}
+  .tag{position:absolute;left:40px;bottom:36px;margin:0;font-size:14px;color:var(--muted)}
+</style>
+<div class="wrap">
+<svg width="960" height="288" viewBox="0 0 960 288">
+  <!-- blocks: sky-blue 240x288 slab, dial-navy 200x192, stopwatch-orange 200x96, dial-yellow 120x80 satellite, grass-green 240x48 base band
+       arrangement: tall sky slab bleeding off top and bottom with a green band at its foot, navy over orange to its right, yellow bleeding off the right edge
+       pattern: chequer (the start/finish line) at space-4 pitch (16px) in ink and surface, cut into the navy block
+       scales: space-4 pitch, radius-md on the satellite corners -->
+  <rect class="sky sq" x="520" y="0" width="240" height="288"/>
+  <rect class="green sq" x="520" y="240" width="240" height="48"/>
+  <rect class="navy sq" x="760" y="0" width="200" height="192"/>
+  <rect class="orange sq" x="760" y="192" width="200" height="96"/>
+  <rect class="yellow tile" x="880" y="152" width="120" height="80"/>
+  <g>
+    <rect class="white sq" x="776" y="16" width="16" height="16"/><rect class="ink sq" x="792" y="16" width="16" height="16"/>
+    <rect class="white sq" x="808" y="16" width="16" height="16"/><rect class="ink sq" x="824" y="16" width="16" height="16"/>
+    <rect class="ink sq" x="776" y="32" width="16" height="16"/><rect class="white sq" x="792" y="32" width="16" height="16"/>
+    <rect class="ink sq" x="808" y="32" width="16" height="16"/><rect class="white sq" x="824" y="32" width="16" height="16"/>
+    <rect class="white sq" x="776" y="48" width="16" height="16"/><rect class="ink sq" x="792" y="48" width="16" height="16"/>
+    <rect class="white sq" x="808" y="48" width="16" height="16"/><rect class="ink sq" x="824" y="48" width="16" height="16"/>
+  </g>
+</svg>
+<h1 class="name">Bathurst<br>Countdown</h1>
+<p class="tag">Every second until the cars roll up the Mountain.</p>
+</div>

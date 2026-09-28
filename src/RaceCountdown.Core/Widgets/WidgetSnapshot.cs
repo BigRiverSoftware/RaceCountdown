@@ -10,9 +10,11 @@ namespace RaceCountdown.Core.Widgets;
 /// </summary>
 /// <param name="Title">Event name, e.g. "Repco Bathurst 1000".</param>
 /// <param name="Days">Whole days to go while counting; null in the other phases.</param>
+/// <param name="Hours">Hours to go after the whole days while counting; null in the other phases.</param>
+/// <param name="Minutes">Minutes to go after the whole hours while counting; null in the other phases.</param>
 /// <param name="Headline">The large text: "12 days", "04:12", "RACE UNDERWAY" or "TBA".</param>
 /// <param name="Detail">The smaller line under the headline, to the minute ("04h 07m"), for widgets redrawn every minute.</param>
-/// <param name="ShortDetail">The same line to the hour ("4 hours"), for widgets redrawn hourly (Android, see <see cref="WidgetSchedule"/>).</param>
+/// <param name="ShortDetail">The same line for the Android widget, which is not redrawn each minute while live (see <see cref="WidgetSchedule"/>).</param>
 /// <param name="AccessibleText">A full sentence for screen readers.</param>
 /// <param name="TargetUtc">The race start, for the Android chronometer; null when awaiting a schedule.</param>
 /// <param name="NextPhaseChangeUtc">When the widget must be redrawn because the phase changes.</param>
@@ -20,6 +22,8 @@ public sealed record WidgetSnapshot(
     CountdownPhase Phase,
     string Title,
     int? Days,
+    int? Hours,
+    int? Minutes,
     string Headline,
     string Detail,
     string ShortDetail,
@@ -28,8 +32,20 @@ public sealed record WidgetSnapshot(
     DateTimeOffset? NextPhaseChangeUtc,
     bool IsStale)
 {
-    /// <summary>The big text on the smallest (2×1) widget: days to go, or a short word.</summary>
-    public string CompactHeadline => Days?.ToString(CultureInfo.InvariantCulture) ?? Phase switch
+    /// <summary>True while counting, when the widgets show the days / hours / minutes segments.</summary>
+    public bool ShowsSegments => Days is not null;
+
+    /// <summary>The days segment, e.g. "13"; empty unless <see cref="ShowsSegments"/>.</summary>
+    public string DaysText => Days?.ToString(CultureInfo.InvariantCulture) ?? "";
+
+    /// <summary>The hours segment, e.g. "04"; empty unless <see cref="ShowsSegments"/>.</summary>
+    public string HoursText => Hours?.ToString("00", CultureInfo.InvariantCulture) ?? "";
+
+    /// <summary>The minutes segment, e.g. "07"; empty unless <see cref="ShowsSegments"/>.</summary>
+    public string MinutesText => Minutes?.ToString("00", CultureInfo.InvariantCulture) ?? "";
+
+    /// <summary>The big text on the smallest (2×1) widget: "13d 04h 07m", or a short word.</summary>
+    public string CompactHeadline => ShowsSegments ? $"{DaysText}d {HoursText}h {MinutesText}m" : Phase switch
     {
         CountdownPhase.Live => "LIVE",
         CountdownPhase.AwaitingSchedule => "TBA",
@@ -37,8 +53,8 @@ public sealed record WidgetSnapshot(
     };
 
     /// <summary>The caption under <see cref="CompactHeadline"/>.</summary>
-    public string CompactCaption => Days is { } days
-        ? days == 1 ? "DAY TO GO" : "DAYS TO GO"
+    public string CompactCaption => ShowsSegments
+        ? "TO GO"
         : Phase switch
         {
             CountdownPhase.RaceDay => "RACE DAY",
@@ -57,10 +73,12 @@ public sealed record WidgetSnapshot(
                 state.Phase,
                 title,
                 state.Days,
+                state.Hours,
+                state.Minutes,
                 Plural(state.Days, "day"),
                 string.Format(inv, "{0:00}h {1:00}m", state.Hours, state.Minutes),
-                Plural(state.Hours, "hour"),
-                $"{Plural(state.Days, "day")}, {Plural(state.Hours, "hour")} until the {title}",
+                string.Format(inv, "{0:00}h {1:00}m", state.Hours, state.Minutes),
+                $"{Plural(state.Days, "day")}, {Plural(state.Hours, "hour")}, {Plural(state.Minutes, "minute")} until the {title}",
                 state.Session!.StartUtc,
                 state.NextPhaseChangeUtc,
                 state.IsStale),
@@ -69,6 +87,8 @@ public sealed record WidgetSnapshot(
                 state.Phase,
                 title,
                 Days: null,
+                Hours: null,
+                Minutes: null,
                 string.Format(inv, "{0:00}:{1:00}", (int)state.Remaining.TotalHours, state.Minutes),
                 "RACE DAY",
                 "RACE DAY",
@@ -81,6 +101,8 @@ public sealed record WidgetSnapshot(
                 state.Phase,
                 title,
                 Days: null,
+                Hours: null,
+                Minutes: null,
                 "RACE UNDERWAY",
                 string.Format(inv, "Green flag {0}:{1:00} ago", (int)state.Elapsed.TotalHours, state.Elapsed.Minutes),
                 "The green flag has dropped",
@@ -93,6 +115,8 @@ public sealed record WidgetSnapshot(
                 state.Phase,
                 title,
                 Days: null,
+                Hours: null,
+                Minutes: null,
                 "TBA",
                 DescribeDates(state.Event),
                 DescribeDates(state.Event),

@@ -44,7 +44,7 @@ public static class CountdownCalculator
     }
 
     // Rounding up means the display reaches 00:00:00 exactly at the start, not a second early.
-    private static TimeSpan CeilingToSeconds(TimeSpan value) =>
+    internal static TimeSpan CeilingToSeconds(TimeSpan value) =>
         TimeSpan.FromSeconds(Math.Ceiling(value.Ticks / (double)TimeSpan.TicksPerSecond));
 
     private static TimeSpan FloorToSeconds(TimeSpan value) =>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Countdown segment tile, as on the countdown page (DialNavyDeep, slightly see-through over the widget art). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#D90B2556" />
+    <corners android:radius="10dp" />
+</shape>

@@ -7,48 +7,53 @@
              Shell.NavBarIsVisible="False"
              Title="Bathurst Countdown">
 
+    <!--
+        Styling follows docs/design-system: white and dial-yellow text on opaque dial-navy panels over the scene,
+        Poppins at the token sizes (countdown / title / label / body / caption), radius-md cards and tiles,
+        space-2 between countdown units and space-4 card padding. tools/dev/check_contrast.py checks the text colours.
+    -->
     <ContentPage.Resources>
-        <Style x:Key="SegmentNumber" TargetType="Label">
-            <Setter Property="FontFamily" Value="OpenSansSemibold" />
-            <Setter Property="FontSize" Value="40" />
-            <Setter Property="TextColor" Value="White" />
-            <Setter Property="HorizontalTextAlignment" Value="Center" />
-        </Style>
-        <Style x:Key="SegmentCaption" TargetType="Label">
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="CharacterSpacing" Value="2" />
-            <Setter Property="TextColor" Value="{StaticResource CountdownGold}" />
-            <Setter Property="HorizontalTextAlignment" Value="Center" />
+        <Style x:Key="Panel" TargetType="Border">
+            <Setter Property="StrokeThickness" Value="0" />
+            <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+            <Setter Property="BackgroundColor" Value="{StaticResource DialNavy}" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Shadow">
+                <Shadow Brush="{StaticResource Ink}" Offset="0,6" Radius="16" Opacity="0.35" />
+            </Setter>
         </Style>
         <Style x:Key="Segment" TargetType="Border">
             <Setter Property="StrokeThickness" Value="0" />
-            <Setter Property="StrokeShape" Value="RoundRectangle 12" />
-            <Setter Property="BackgroundColor" Value="{StaticResource CountdownPanel}" />
-            <Setter Property="Padding" Value="4,8" />
-            <Setter Property="WidthRequest" Value="62" />
+            <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+            <Setter Property="BackgroundColor" Value="{StaticResource DialNavyDeep}" />
+            <Setter Property="Padding" Value="4,10" />
+            <Setter Property="WidthRequest" Value="68" />
+        </Style>
+        <Style x:Key="SegmentNumber" TargetType="Label">
+            <Setter Property="FontFamily" Value="PoppinsBold" />
+            <Setter Property="FontSize" Value="32" />
+            <Setter Property="TextColor" Value="{StaticResource Surface}" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="SegmentCaption" TargetType="Label">
+            <Setter Property="FontFamily" Value="PoppinsBold" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="CharacterSpacing" Value="1" />
+            <Setter Property="TextColor" Value="{StaticResource DialYellow}" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="Caption" TargetType="Label">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="TextColor" Value="{StaticResource OnNavyMuted}" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
         </Style>
     </ContentPage.Resources>
 
-    <Grid x:Name="Root" BackgroundColor="#140A2A" SizeChanged="OnRootSizeChanged">
-        <!-- Mount Panorama artwork (plan §9), portrait or landscape crop chosen by window shape in code-behind. -->
+    <Grid x:Name="Root" BackgroundColor="{StaticResource SkyBlue}" SizeChanged="OnRootSizeChanged">
+        <!-- Sunny day on the Mountain (docs/backgrounds), portrait or landscape and cropped from the top in code-behind.
+             The middle of the art is left clear for the countdown; the road and wall stay in view below it. -->
         <Image x:Name="BackgroundArt" Source="background_portrait.png" Aspect="AspectFill"
-               SemanticProperties.Description="Sunset over Mount Panorama" />
-
-        <!--
-            Readability: a light overlay keeps the art colourful; the content card (50%) on top of it (at least 25%)
-            gives at least 62% behind the countdown, and the overlay reaches 62% under the footer.
-            tools/dev/check_contrast.py assumes these values.
-        -->
-        <BoxView>
-            <BoxView.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="#40140A2A" Offset="0.0" />
-                    <GradientStop Color="#59140A2A" Offset="0.6" />
-                    <GradientStop Color="#9E140A2A" Offset="0.85" />
-                    <GradientStop Color="#BF140A2A" Offset="1.0" />
-                </LinearGradientBrush>
-            </BoxView.Background>
-        </BoxView>
+               SemanticProperties.Description="Blue sky over the hills, kerb and wall of Mount Panorama" />
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroupList>
@@ -63,50 +68,72 @@
                             <AdaptiveTrigger MinWindowWidth="720" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
-                            <Setter TargetName="TitleLabel" Property="Label.FontSize" Value="44" />
+                            <Setter TargetName="Wordmark" Property="Label.FontSize" Value="34" />
+                            <Setter TargetName="TitleLabel" Property="Label.FontSize" Value="40" />
                             <Setter TargetName="BannerLabel" Property="Label.FontSize" Value="40" />
-                            <Setter TargetName="DaysNumber" Property="Label.FontSize" Value="84" />
-                            <Setter TargetName="HoursNumber" Property="Label.FontSize" Value="84" />
-                            <Setter TargetName="MinutesNumber" Property="Label.FontSize" Value="84" />
-                            <Setter TargetName="SecondsNumber" Property="Label.FontSize" Value="84" />
+                            <Setter TargetName="DaysNumber" Property="Label.FontSize" Value="72" />
+                            <Setter TargetName="HoursNumber" Property="Label.FontSize" Value="72" />
+                            <Setter TargetName="MinutesNumber" Property="Label.FontSize" Value="72" />
+                            <Setter TargetName="SecondsNumber" Property="Label.FontSize" Value="72" />
                             <Setter TargetName="DaysSegment" Property="Border.WidthRequest" Value="150" />
                             <Setter TargetName="HoursSegment" Property="Border.WidthRequest" Value="150" />
                             <Setter TargetName="MinutesSegment" Property="Border.WidthRequest" Value="150" />
                             <Setter TargetName="SecondsSegment" Property="Border.WidthRequest" Value="150" />
-                            <Setter TargetName="MainContent" Property="VerticalStackLayout.Spacing" Value="28" />
-                            <Setter TargetName="Segments" Property="HorizontalStackLayout.Spacing" Value="10" />
+                            <Setter TargetName="Card" Property="Border.Padding" Value="24" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
             </VisualStateGroupList>
         </VisualStateManager.VisualStateGroups>
 
-        <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}" RefreshColor="{StaticResource CountdownGold}">
+        <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}" RefreshColor="{StaticResource StopwatchOrange}">
             <ScrollView>
-                <Grid RowDefinitions="*,Auto,*" MinimumHeightRequest="480" Padding="16,32">
-                    <Border Grid.Row="1" HorizontalOptions="Center" MaximumWidthRequest="800"
-                            BackgroundColor="#80140A2A" StrokeThickness="0" StrokeShape="RoundRectangle 24" Padding="12,24">
-                    <VerticalStackLayout x:Name="MainContent" Spacing="18">
+                <Grid RowDefinitions="*,Auto,*" MinimumHeightRequest="480" Padding="12,32">
+                    <Border x:Name="Card" Grid.Row="1" Style="{StaticResource Panel}"
+                            HorizontalOptions="Center" MaximumWidthRequest="800">
+                    <VerticalStackLayout Spacing="24">
 
-                        <Label x:Name="TitleLabel"
-                               Text="{Binding Display.Title}"
-                               FontFamily="OpenSansSemibold" FontSize="30" TextColor="White"
-                               HorizontalTextAlignment="Center"
-                               SemanticProperties.HeadingLevel="Level1" />
+                        <!-- BATHURST COUNTDOWN wordmark with the bezel's orange-to-yellow arc beneath it. -->
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center"
+                                             SemanticProperties.Description="Bathurst Countdown">
+                            <Label x:Name="Wordmark" FontFamily="PoppinsBoldItalic" FontSize="24"
+                                   HorizontalTextAlignment="Center">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="BATHURST " TextColor="{StaticResource Surface}" />
+                                        <Span Text="COUNTDOWN" TextColor="{StaticResource StopwatchOrange}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <BoxView HeightRequest="4" WidthRequest="96" CornerRadius="2" HorizontalOptions="Center">
+                                <BoxView.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Color="{StaticResource StopwatchOrange}" Offset="0.0" />
+                                        <GradientStop Color="{StaticResource DialYellow}" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </BoxView.Background>
+                            </BoxView>
+                        </VerticalStackLayout>
 
-                        <Label Text="{Binding Display.Subtitle}"
-                               FontSize="14" TextColor="{StaticResource CountdownMuted}"
-                               HorizontalTextAlignment="Center" />
+                        <VerticalStackLayout Spacing="4">
+                            <Label x:Name="TitleLabel"
+                                   Text="{Binding Display.Title}"
+                                   FontFamily="PoppinsBold" FontSize="28" TextColor="{StaticResource Surface}"
+                                   HorizontalTextAlignment="Center"
+                                   SemanticProperties.HeadingLevel="Level1" />
+
+                            <Label Text="{Binding Display.Subtitle}" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
 
                         <Label x:Name="BannerLabel"
                                Text="{Binding Display.Banner}"
                                IsVisible="{Binding Display.HasBanner}"
-                               FontFamily="OpenSansSemibold" FontSize="28" CharacterSpacing="4"
-                               TextColor="{StaticResource CountdownGold}"
+                               FontFamily="PoppinsBold" FontSize="28" CharacterSpacing="4"
+                               TextColor="{StaticResource DialYellow}"
                                HorizontalTextAlignment="Center" />
 
-                        <!-- The segmented countdown. Fixed-width segments keep it steady as digits change. -->
-                        <HorizontalStackLayout x:Name="Segments" HorizontalOptions="Center" Spacing="6"
+                        <!-- The segmented countdown. Fixed-width tiles keep it steady as digits change. -->
+                        <HorizontalStackLayout x:Name="Segments" HorizontalOptions="Center" Spacing="8"
                                                IsVisible="{Binding Display.ShowCountdown}"
                                                SemanticProperties.Description="{Binding Display.AccessibleText}">
                             <Border x:Name="DaysSegment" Style="{StaticResource Segment}" IsVisible="{Binding Display.ShowDays}">
@@ -135,34 +162,46 @@
                             </Border>
                         </HorizontalStackLayout>
 
-                        <Label Text="{Binding Display.Detail}"
-                               IsVisible="{Binding Display.HasDetail}"
-                               FontSize="18" TextColor="White"
-                               HorizontalTextAlignment="Center"
-                               SemanticProperties.Description="{Binding Display.AccessibleText}" />
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Display.Detail}"
+                                   IsVisible="{Binding Display.HasDetail}"
+                                   FontFamily="PoppinsSemibold" FontSize="18" TextColor="{StaticResource Surface}"
+                                   HorizontalTextAlignment="Center"
+                                   SemanticProperties.Description="{Binding Display.AccessibleText}" />
 
-                        <Label Text="{Binding Display.StartTime}"
-                               IsVisible="{Binding Display.HasStartTime}"
-                               FontSize="16" TextColor="White"
-                               HorizontalTextAlignment="Center" />
+                            <Label Text="{Binding Display.StartTime}"
+                                   IsVisible="{Binding Display.HasStartTime}"
+                                   FontSize="16" TextColor="{StaticResource Surface}"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+
+                        <!-- The footer sits in the card so the road and wall at the foot of the art stay clear. -->
+                        <VerticalStackLayout Spacing="8">
+                            <HorizontalStackLayout HorizontalOptions="Center" Spacing="12">
+                                <Label Text="{Binding Display.Footer}" Style="{StaticResource Caption}"
+                                       VerticalTextAlignment="Center" />
+                                <Button Text="Refresh"
+                                        Command="{Binding RefreshCommand}"
+                                        FontFamily="PoppinsSemibold" FontSize="13" Padding="12,4" MinimumHeightRequest="36"
+                                        CornerRadius="6"
+                                        BackgroundColor="{StaticResource DialNavyDeep}" TextColor="{StaticResource Surface}"
+                                        SemanticProperties.Hint="Checks for an updated race start time" />
+                            </HorizontalStackLayout>
+                            <Label Text="Not affiliated with Supercars or the Bathurst 1000."
+                                   Style="{StaticResource Caption}" FontSize="12" />
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                     </Border>
 
-                    <VerticalStackLayout Grid.Row="2" VerticalOptions="End" Spacing="6">
-                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="12">
-                            <Label Text="{Binding Display.Footer}"
-                                   FontSize="12" TextColor="{StaticResource CountdownMuted}"
-                                   VerticalTextAlignment="Center" />
-                            <Button Text="Refresh"
-                                    Command="{Binding RefreshCommand}"
-                                    FontSize="12" Padding="12,4" MinimumHeightRequest="32"
-                                    BackgroundColor="{StaticResource CountdownPanel}" TextColor="White"
-                                    SemanticProperties.Hint="Checks for an updated race start time" />
-                        </HorizontalStackLayout>
-                        <Label Text="Not affiliated with Supercars or the Bathurst 1000."
-                               FontSize="11" TextColor="{StaticResource CountdownMuted}"
+                    <!-- Copyright at the very bottom of the screen, in very small print. It sits over the road at the
+                         foot of the art, so a translucent Ink pill keeps it readable. -->
+                    <Border Grid.Row="2" VerticalOptions="End" HorizontalOptions="Center" Margin="0,16,0,-24"
+                            StrokeThickness="0" StrokeShape="RoundRectangle 6" Padding="8,2"
+                            BackgroundColor="#99101A2E">
+                        <Label Text="Copyright (c) 2026 Big River Software"
+                               FontSize="10" TextColor="{StaticResource OnNavyMuted}"
                                HorizontalTextAlignment="Center" />
-                    </VerticalStackLayout>
+                    </Border>
                 </Grid>
             </ScrollView>
         </RefreshView>

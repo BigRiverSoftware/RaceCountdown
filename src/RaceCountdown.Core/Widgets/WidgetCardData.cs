@@ -26,6 +26,10 @@ public static class WidgetCardData
             json.WriteString("title", snapshot.Title);
             json.WriteString("headline", snapshot.Headline);
             json.WriteString("detail", snapshot.Detail);
+            json.WriteBoolean("showSegments", snapshot.ShowsSegments);
+            json.WriteString("days", snapshot.DaysText);
+            json.WriteString("hours", snapshot.HoursText);
+            json.WriteString("minutes", snapshot.MinutesText);
             json.WriteString("compactHeadline", snapshot.CompactHeadline);
             json.WriteString("compactCaption", snapshot.CompactCaption);
             json.WriteString("accessibleText", snapshot.AccessibleText);

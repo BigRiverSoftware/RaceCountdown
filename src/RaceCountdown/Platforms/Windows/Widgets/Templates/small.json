@@ -7,7 +7,41 @@
   "selectAction": { "type": "Action.Execute", "verb": "open", "tooltip": "Open Bathurst Countdown" },
   "body": [
     {
+      "type": "ColumnSet",
+      "$when": "${showSegments}",
+      "horizontalAlignment": "Center",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "auto",
+          "items": [
+            { "type": "TextBlock", "text": "${days}", "size": "Large", "weight": "Bolder", "color": "Light", "horizontalAlignment": "Center" },
+            { "type": "TextBlock", "text": "DAYS", "size": "Small", "weight": "Bolder", "color": "Light", "isSubtle": true, "horizontalAlignment": "Center", "spacing": "None" }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "spacing": "Medium",
+          "items": [
+            { "type": "TextBlock", "text": "${hours}", "size": "Large", "weight": "Bolder", "color": "Light", "horizontalAlignment": "Center" },
+            { "type": "TextBlock", "text": "HRS", "size": "Small", "weight": "Bolder", "color": "Light", "isSubtle": true, "horizontalAlignment": "Center", "spacing": "None" }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "spacing": "Medium",
+          "items": [
+            { "type": "TextBlock", "text": "${minutes}", "size": "Large", "weight": "Bolder", "color": "Light", "horizontalAlignment": "Center" },
+            { "type": "TextBlock", "text": "MIN", "size": "Small", "weight": "Bolder", "color": "Light", "isSubtle": true, "horizontalAlignment": "Center", "spacing": "None" }
+          ]
+        }
+      ]
+    },
+    {
       "type": "TextBlock",
+      "$when": "${!showSegments}",
       "text": "${compactHeadline}",
       "size": "ExtraLarge",
       "weight": "Bolder",
@@ -17,6 +51,7 @@
     },
     {
       "type": "TextBlock",
+      "$when": "${!showSegments}",
       "text": "${compactCaption}",
       "size": "Small",
       "weight": "Bolder",

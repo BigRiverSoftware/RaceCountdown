@@ -39,18 +39,23 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<!-- App Icon: sunset + Mount Panorama background, circuit + checkered flag foreground (plan §9) -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#2B124C" />
+		<!-- App Icon (docs/design-system): the stopwatch master over its own dark rounded frame. The master is a PNG
+		     because its text is Poppins. Android shrinks it into the adaptive icon's safe zone; Windows shows it whole. -->
+		<MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'"
+		          Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.png" ForegroundScale="0.66" />
+		<MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'"
+		          Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.png" />
 
-		<!-- Splash Screen: circuit outline on the deep purple of the palette -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#2B124C" BaseSize="128,128" />
+		<!-- Splash Screen: the white Mount Panorama circuit on dial-navy -->
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#143A7A" BaseSize="128,128" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
-		<!-- Full-screen art: small base sizes keep the 4x (xxxhdpi / scale-400) PNGs to about 1440 px. -->
-		<MauiImage Update="Resources\Images\background_portrait.svg" BaseSize="360,640" />
-		<MauiImage Update="Resources\Images\background_landscape.svg" BaseSize="640,360" />
-		<MauiImage Update="Resources\Images\widget_background.svg" BaseSize="320,160" />
+		<!-- Full-screen art (docs/backgrounds, copied by tools/dev/build_art.py): base sizes make the 4x
+		     (xxxhdpi / scale-400) PNGs the size of the 1080 × 1920 masters. -->
+		<MauiImage Update="Resources\Images\background_portrait.png" BaseSize="270,480" />
+		<MauiImage Update="Resources\Images\background_landscape.png" BaseSize="480,270" />
+		<MauiImage Update="Resources\Images\widget_background.png" BaseSize="320,160" />
 
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />

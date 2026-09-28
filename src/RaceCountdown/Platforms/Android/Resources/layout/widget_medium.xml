@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Medium (4×2) countdown widget: title, headline or race-day chronometer, detail line (plan §8.2). -->
+<!-- Medium (4×2) countdown widget: title, days/hours/minutes tiles (or headline, or race-day chronometer), detail line (plan §8.2). -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
@@ -27,10 +27,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="sans-serif"
+            android:textStyle="bold"
             android:maxLines="1"
             android:textColor="#FFFFFF"
             android:textSize="14sp" />
+
+        <include
+            layout="@layout/widget_segments"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="6dp" />
 
         <TextView
             android:id="@+id/widget_headline"
@@ -39,7 +46,8 @@
             android:autoSizeMaxTextSize="34sp"
             android:autoSizeMinTextSize="16sp"
             android:autoSizeTextType="uniform"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="sans-serif"
+            android:textStyle="bold"
             android:maxLines="1"
             android:textColor="#FFFFFF"
             android:textSize="34sp" />
@@ -51,7 +59,8 @@
             android:autoSizeMaxTextSize="34sp"
             android:autoSizeMinTextSize="16sp"
             android:autoSizeTextType="uniform"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="sans-serif"
+            android:textStyle="bold"
             android:textColor="#FFFFFF"
             android:textSize="34sp"
             android:visibility="gone" />
@@ -62,7 +71,7 @@
             android:layout_height="wrap_content"
             android:letterSpacing="0.05"
             android:maxLines="1"
-            android:textColor="#FFC21A"
+            android:textColor="#FFC21F"
             android:textSize="14sp" />
 
         <TextView

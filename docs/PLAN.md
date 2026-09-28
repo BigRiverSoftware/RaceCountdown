@@ -242,7 +242,7 @@ The pipeline checks `robots.txt` and the site's terms, sends an honest User-Agen
 
 All artwork is original. No Supercars or Bathurst 1000 logos or trademarked marks are used.
 
-- **Palette**: sunset over the mountain, deep purple `#2B124C` → magenta `#B0185E` → racing orange `#FF6A00` → gold `#FFC21A`. Checkered black and white for accents. Gum-tree green `#2E6B3A` for the mountain.
+- **Palette**: superseded by `docs/design-system` (sunny day on the Mountain: sky-blue `#0A4FC9`, dial-navy `#143A7A`, stopwatch-orange `#FF5F14`, dial-yellow `#FFC21F`; Poppins). Originally: sunset over the mountain, deep purple `#2B124C` → magenta `#B0185E` → racing orange `#FF6A00` → gold `#FFC21A`. Checkered black and white for accents. Gum-tree green `#2E6B3A` for the mountain.
 - **App icon** (adaptive: foreground + background layers):
   - Foreground: a bold, simplified outline of the Mount Panorama circuit. Conrod Straight, the Chase, Skyline and the Esses should be recognisable, drawn as a thick white ribbon with a checkered-flag flick at the start/finish.
   - Background: the sunset gradient with a mountain silhouette.
