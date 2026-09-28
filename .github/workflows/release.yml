@@ -150,6 +150,8 @@ jobs:
     runs-on: windows-latest
     env:
       VERSION: ${{ needs.version.outputs.version }}
+      # Set explicitly: without it the MSIX tools put packages in the project folder, not under bin/.
+      APPX_DIR: ${{ github.workspace }}/AppPackages/
     steps:
       - uses: actions/checkout@v7
 
@@ -202,11 +204,12 @@ jobs:
           -p:ApplicationDisplayVersion=${{ needs.version.outputs.windows-display }}
           -p:ApplicationVersion=${{ needs.version.outputs.windows-build }}
           -p:AppxPackageSigningEnabled=false
+          -p:AppxPackageDir="${{ env.APPX_DIR }}"
 
       - name: Sign and collect packages
         shell: pwsh
         run: |
-          $packageDir = Get-ChildItem src/RaceCountdown/bin/Release/net10.0-windows10.0.19041.0/win-x64/AppPackages -Directory |
+          $packageDir = Get-ChildItem $env:APPX_DIR -Directory |
             Where-Object Name -like "*_$($env:VERSION)_*" | Select-Object -First 1
           if (-not $packageDir) { throw "No AppPackages folder for version $env:VERSION." }
           $msix = Get-ChildItem $packageDir.FullName -Filter *.msix | Select-Object -First 1
