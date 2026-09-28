@@ -112,7 +112,7 @@ public class NextSessionSelectorTests
     [Fact]
     public void Filter_matches_event_names_case_insensitively_and_null_criteria_match_anything()
     {
-        var ev = TestFeeds.Bathurst2026() with { Name = "Repco BATHURST 1000" };
+        var ev = TestFeeds.Bathurst2026() with { Name = "The BATHURST 1000" };
 
         Assert.True(EventFilter.Bathurst1000MainRace.MatchesEvent(ev));
         Assert.True(new EventFilter().MatchesEvent(ev));

@@ -22,7 +22,7 @@ public class SupercarsParserTests
         var bathurst = Assert.Single(FeedBuilder.BathurstEntries(SupercarsParser.ParseCalendar(Fixtures.Read("calendar.html"))));
 
         Assert.Equal("2026-bathurst-1000", bathurst.Slug);
-        Assert.Equal("2026 Repco Bathurst 1000", bathurst.Title);
+        Assert.Equal("2026 Bathurst 1000", bathurst.Title);
         Assert.Equal("Bathurst, NSW", bathurst.Location);
         Assert.Equal(new DateTimeOffset(2026, 10, 8, 6, 0, 0, TimeSpan.FromHours(11)), bathurst.Start);
         Assert.Equal(new DateTimeOffset(2026, 10, 11, 18, 0, 0, TimeSpan.FromHours(11)), bathurst.End);
@@ -33,7 +33,7 @@ public class SupercarsParserTests
     {
         var sessions = SupercarsParser.ParseEventSessions(Fixtures.Read("2026-bathurst-1000.html"));
 
-        var race = Assert.Single(sessions, s => s.SeriesName == FeedBuilder.MainSeriesName && s.Type == "Race");
+        var race = Assert.Single(sessions, s => FeedBuilder.IsMainSeries(s.SeriesName) && s.Type == "Race");
         Assert.Equal("Race 30", race.Name);
         Assert.Equal(new DateTimeOffset(2026, 10, 11, 11, 30, 0, TimeSpan.FromHours(11)), race.Start);
         Assert.Equal(new DateTimeOffset(2026, 10, 11, 18, 30, 0, TimeSpan.FromHours(11)), race.End);
@@ -45,7 +45,7 @@ public class SupercarsParserTests
         var sessions = SupercarsParser.ParseEventSessions(Fixtures.Read("2026-bathurst-1000.html"));
 
         Assert.Contains(sessions, s => s.SeriesName == "DUNLOP Super2 Series" && s.Type == "Race");
-        Assert.Contains(sessions, s => s.SeriesName == FeedBuilder.MainSeriesName && s.Type == "Qualifying");
+        Assert.Contains(sessions, s => FeedBuilder.IsMainSeries(s.SeriesName) && s.Type == "Qualifying");
         Assert.Contains(sessions, s => s.SeriesName == "DUNLOP Super2 Series" && s.Type == "Shootout");
         Assert.Equal(sessions.Count, sessions.Distinct().Count());
     }

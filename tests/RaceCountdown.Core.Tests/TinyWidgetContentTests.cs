@@ -28,7 +28,7 @@ public class TinyWidgetContentTests
         Assert.Equal(TinyCountdownMode.Days, content.Mode);
         Assert.Equal(("12", "DAYS"), (content.Headline, content.Caption));
         Assert.Equal(SnapshotAt(now).DaysText, content.Headline);
-        Assert.Equal("12 days until the Repco Bathurst 1000", content.AccessibleText);
+        Assert.Equal("12 days until the Bathurst 1000", content.AccessibleText);
         Assert.False(content.UsesChronometer);
     }
 
@@ -74,7 +74,7 @@ public class TinyWidgetContentTests
         var content = ContentAt(now);
 
         Assert.Equal(("04:12", "TO GO"), (content.Headline, content.Caption));
-        Assert.Equal("Race day: 4 hours, 12 minutes until the Repco Bathurst 1000", content.AccessibleText);
+        Assert.Equal("Race day: 4 hours, 12 minutes until the Bathurst 1000", content.AccessibleText);
         Assert.Equal(RaceStart - new TimeSpan(4, 12, 0) + TimeSpan.FromSeconds(1), content.NextRedrawUtc);
         Assert.Equal("04:11", ContentAt(content.NextRedrawUtc!.Value).Headline);
     }
@@ -104,7 +104,7 @@ public class TinyWidgetContentTests
         Assert.Equal((headline, "TO GO"), (content.Headline, content.Caption));
         Assert.Equal(RaceStart, content.TargetUtc);
         Assert.Equal(RaceStart, content.NextRedrawUtc);
-        Assert.Equal("The Repco Bathurst 1000 starts in under 30 minutes", content.AccessibleText);
+        Assert.Equal("The Bathurst 1000 starts in under 30 minutes", content.AccessibleText);
     }
 
     [Fact]

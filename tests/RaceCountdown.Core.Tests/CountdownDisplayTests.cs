@@ -31,8 +31,8 @@ public class CountdownDisplayTests
         var display = DisplayAt(RaceStart - new TimeSpan(13, 4, 7, 30));
 
         Assert.Equal(CountdownPhase.Counting, display.Phase);
-        Assert.Equal("Repco Bathurst 1000", display.Title);
-        Assert.Equal("Repco Supercars Championship · Mount Panorama Circuit, Bathurst, NSW", display.Subtitle);
+        Assert.Equal("Bathurst 1000", display.Title);
+        Assert.Equal("Supercars Championship · Mount Panorama Circuit, Bathurst, NSW", display.Subtitle);
         Assert.True(display.ShowCountdown);
         Assert.True(display.ShowDays);
         Assert.Equal(("13", "04", "07", "30"), (display.Days, display.Hours, display.Minutes, display.Seconds));
@@ -42,7 +42,7 @@ public class CountdownDisplayTests
         Assert.False(display.HasDetail);
         Assert.True(display.HasStartTime);
         Assert.Equal("Sun 11 Oct, 11:30 am AEDT", display.StartTime);
-        Assert.Equal("13 days, 4 hours, 7 minutes until the Repco Bathurst 1000", display.AccessibleText);
+        Assert.Equal("13 days, 4 hours, 7 minutes until the Bathurst 1000", display.AccessibleText);
         Assert.Equal("Updated 28 Sept, 9:15 am", display.Footer); // AEST: DST starts 4 Oct
         Assert.False(display.IsStale);
     }
@@ -59,7 +59,7 @@ public class CountdownDisplayTests
     public void Singular_units()
     {
         Assert.Equal(
-            "1 day, 1 hour, 1 minute until the Repco Bathurst 1000",
+            "1 day, 1 hour, 1 minute until the Bathurst 1000",
             DisplayAt(RaceStart - new TimeSpan(1, 1, 1, 0)).AccessibleText);
     }
 
@@ -73,7 +73,7 @@ public class CountdownDisplayTests
         Assert.False(display.ShowDays);
         Assert.Equal(("04", "12", "09"), (display.Hours, display.Minutes, display.Seconds));
         Assert.Equal("RACE DAY", display.Banner);
-        Assert.Equal("Race day: 4 hours, 12 minutes until the Repco Bathurst 1000", display.AccessibleText);
+        Assert.Equal("Race day: 4 hours, 12 minutes until the Bathurst 1000", display.AccessibleText);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class CountdownDisplayTests
         Assert.Equal("RACE UNDERWAY", display.Banner);
         Assert.Equal("Green flag 1:23:45 ago", display.Detail);
         Assert.NotNull(display.StartTime);
-        Assert.Equal("The Repco Bathurst 1000 is underway", display.AccessibleText);
+        Assert.Equal("The Bathurst 1000 is underway", display.AccessibleText);
     }
 
     [Fact]

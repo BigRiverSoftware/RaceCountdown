@@ -21,7 +21,7 @@ public class WidgetCardDataTests
     {
         var data = DataAt(RaceStart - new TimeSpan(13, 4, 7, 30));
 
-        Assert.Equal("Repco Bathurst 1000", data.GetProperty("title").GetString());
+        Assert.Equal("Bathurst 1000", data.GetProperty("title").GetString());
         Assert.Equal("13 days", data.GetProperty("headline").GetString());
         Assert.Equal("04h 07m", data.GetProperty("detail").GetString());
         Assert.True(data.GetProperty("showSegments").GetBoolean());
@@ -30,7 +30,7 @@ public class WidgetCardDataTests
         Assert.Equal("07", data.GetProperty("minutes").GetString());
         Assert.Equal("13d 04h 07m", data.GetProperty("compactHeadline").GetString());
         Assert.Equal("TO GO", data.GetProperty("compactCaption").GetString());
-        Assert.Equal("13 days, 4 hours, 7 minutes until the Repco Bathurst 1000", data.GetProperty("accessibleText").GetString());
+        Assert.Equal("13 days, 4 hours, 7 minutes until the Bathurst 1000", data.GetProperty("accessibleText").GetString());
         Assert.False(data.GetProperty("isStale").GetBoolean());
         Assert.Equal(WidgetCardData.StaleText, data.GetProperty("staleText").GetString());
         Assert.Equal("", data.GetProperty("background").GetString());

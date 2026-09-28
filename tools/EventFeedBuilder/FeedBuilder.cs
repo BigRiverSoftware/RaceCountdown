@@ -13,17 +13,23 @@ public static partial class FeedBuilder
     public const string SeriesId = "supercars";
     public const string TrackId = "mount-panorama";
 
-    /// <summary>The main championship. Support categories on the same page have other series names (spike S1).</summary>
-    public const string MainSeriesName = "Repco Supercars Championship";
+    /// <summary>
+    /// The main championship. The source prefixes it with a naming-rights sponsor, so match on the suffix.
+    /// Support categories on the same page have other series names (spike S1).
+    /// </summary>
+    public const string MainSeriesName = "Supercars Championship";
+
+    /// <summary>Published event name. The source title carries the year and a sponsor, which the app does not show.</summary>
+    public const string EventName = "Bathurst 1000";
 
     [GeneratedRegex(@"^(?<year>\d{4})-bathurst-1000$")]
     public static partial Regex BathurstSlug();
 
-    [GeneratedRegex(@"^\d{4}\s+")]
-    private static partial Regex LeadingYear();
-
     [GeneratedRegex("[^a-z0-9]+")]
     private static partial Regex NonSlugCharacters();
+
+    public static bool IsMainSeries(string seriesName) =>
+        seriesName.EndsWith(MainSeriesName, StringComparison.Ordinal);
 
     public static IEnumerable<CalendarEntry> BathurstEntries(IEnumerable<CalendarEntry> calendar) =>
         calendar.Where(e => BathurstSlug().IsMatch(e.Slug));
@@ -62,7 +68,7 @@ public static partial class FeedBuilder
     private static RaceEvent BuildEvent(CalendarEntry entry, IReadOnlyList<SourceSession> sourceSessions, TimeZoneInfo zone)
     {
         var sessions = sourceSessions
-            .Where(s => s.SeriesName == MainSeriesName && s.Type == "Race")
+            .Where(s => IsMainSeries(s.SeriesName) && s.Type == "Race")
             .Select(s => new Session(
                 Slugify(s.Name),
                 s.Name,
@@ -76,7 +82,7 @@ public static partial class FeedBuilder
             $"{SeriesId}-{entry.Slug}",
             SeriesId,
             TrackId,
-            LeadingYear().Replace(entry.Title, string.Empty).Trim(),
+            EventName,
             TrackTime.ToLocalDate(entry.Start, zone),
             TrackTime.ToLocalDate(entry.End, zone),
             // No main-race start time yet means the app shows "TBA" (plan D13), even if the dates are known.
@@ -92,7 +98,7 @@ public static partial class FeedBuilder
     {
         var lastYear = scraped.Select(e => e.StartDate?.Year).Max();
         var year = lastYear + 1 ?? TrackTime.ToLocalDate(now, zone).Year;
-        return new RaceEvent($"{SeriesId}-{year}-bathurst-1000", SeriesId, TrackId, "Bathurst 1000", null, null, EventStatus.DateTba, []);
+        return new RaceEvent($"{SeriesId}-{year}-bathurst-1000", SeriesId, TrackId, EventName, null, null, EventStatus.DateTba, []);
     }
 
     public static string Slugify(string name) =>
