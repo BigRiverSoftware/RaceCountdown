@@ -30,7 +30,7 @@
 | `feed/events.schema.json`, `feed/overrides.json`, [`feed/README.md`](../feed/README.md) | Done |
 | `EventFeedBuilder`: fetch → parse → merge overrides → schema + validator + 7-day-move checks → `events.json` | Done |
 | Builder tests: 35 tests against pages saved from supercars.com on 2026-09-27 | Done |
-| [`publish-feed.yml`](../.github/workflows/publish-feed.yml): daily, plus 6-hourly in race week, deploys to GitHub Pages | Written, not yet run |
+| [`publish-feed.yml`](../.github/workflows/publish-feed.yml): daily or run by hand, deploys to GitHub Pages | Written, not yet run |
 | Feed live with the 2026 race at 2026-10-11 11:30 Australia/Sydney | **Waiting on push + Pages** (see below) |
 
 **Verification:** `dotnet build RaceCountdown.slnx` has 0 warnings and 0 errors, and all 104 tests pass. A live

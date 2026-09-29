@@ -56,13 +56,13 @@ jobs:
     needs: version
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: microsoft
           java-version: '17'
@@ -113,7 +113,7 @@ jobs:
           Copy-Item $apk.FullName "dist/BathurstCountdown-$env:VERSION-android.apk"
           Remove-Item $env:ANDROID_KEYSTORE
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: android
           path: dist/*
@@ -122,14 +122,17 @@ jobs:
   windows:
     needs: version
     runs-on: windows-latest
+    env:
+      # Set explicitly: without it the MSIX tools put packages in the project folder, not under bin/.
+      APPX_DIR: ${{ github.workspace }}/AppPackages/
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: microsoft
           java-version: '17'
@@ -177,11 +180,12 @@ jobs:
           -p:ApplicationDisplayVersion=${{ needs.version.outputs.windows-display }}
           -p:ApplicationVersion=${{ needs.version.outputs.windows-build }}
           -p:AppxPackageSigningEnabled=false
+          -p:AppxPackageDir="${{ env.APPX_DIR }}"
 
       - name: Sign and collect packages
         shell: pwsh
         run: |
-          $packageDir = Get-ChildItem src/RaceCountdown/bin/Release/net10.0-windows10.0.19041.0/win-x64/AppPackages -Directory |
+          $packageDir = Get-ChildItem $env:APPX_DIR -Directory |
             Where-Object Name -like "*_$($env:VERSION)_*" | Select-Object -First 1
           if (-not $packageDir) { throw "No AppPackages folder for version $env:VERSION." }
           $msix = Get-ChildItem $packageDir.FullName -Filter *.msix | Select-Object -First 1
@@ -206,7 +210,7 @@ jobs:
           Compress-Archive -Path "$($packageDir.FullName)/*" -DestinationPath "dist/$name.zip"
           Remove-Item $env:WINDOWS_PFX
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: windows
           path: dist/*
@@ -218,7 +222,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: dist
           merge-multiple: true

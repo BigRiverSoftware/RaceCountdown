@@ -6,14 +6,6 @@ name: Publish feed
 on:
   schedule:
     - cron: '17 18 * * *'        # Daily (04:17/05:17 in Sydney).
-    - cron: '17 0,6,12 * * *'    # Extra runs that only publish in race week.
-  push:
-    branches: [ dev ]
-    paths:
-      - feed/**
-      - tools/EventFeedBuilder/**
-      - src/RaceCountdown.Core/**
-      - .github/workflows/publish-feed.yml
   workflow_dispatch:
 
 permissions:
@@ -34,9 +26,9 @@ jobs:
     outputs:
       publish: ${{ steps.feed.outputs.publish }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
 
@@ -49,17 +41,13 @@ jobs:
       - name: Build and check the feed
         id: feed
         run: |
-          args=(--out site --previous previous.json)
-          if [ "${{ github.event.schedule }}" = "17 0,6,12 * * *" ]; then
-            args+=(--race-week-only)
-          fi
-          dotnet run --project tools/EventFeedBuilder -c Release -- "${args[@]}"
+          dotnet run --project tools/EventFeedBuilder -c Release -- --out site --previous previous.json
           if [ -f site/events.json ]; then
             cp feed/events.schema.json site/
             echo "publish=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         if: steps.feed.outputs.publish == 'true'
         with:
           path: site
@@ -73,4 +61,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}events.json
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
