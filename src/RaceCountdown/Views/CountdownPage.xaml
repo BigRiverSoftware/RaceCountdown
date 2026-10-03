@@ -16,7 +16,7 @@
         <Style x:Key="Panel" TargetType="Border">
             <Setter Property="StrokeThickness" Value="0" />
             <Setter Property="StrokeShape" Value="RoundRectangle 14" />
-            <Setter Property="BackgroundColor" Value="{StaticResource DialNavy}" />
+            <Setter Property="BackgroundColor" Value="{StaticResource DialNavyTranslucent}" />
             <Setter Property="Padding" Value="16" />
             <Setter Property="Shadow">
                 <Shadow Brush="{StaticResource Ink}" Offset="0,6" Radius="16" Opacity="0.35" />

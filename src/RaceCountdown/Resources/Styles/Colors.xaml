@@ -18,6 +18,8 @@
     <Color x:Key="DialYellow">#FFC21F</Color>
     <Color x:Key="KerbRed">#E5202E</Color>
     <Color x:Key="GrassGreen">#4F8A2A</Color>
+    <!-- Dial navy at 40% opacity: the main panel, so the background art shows through. -->
+    <Color x:Key="DialNavyTranslucent">#66143A7A</Color>
     <!-- White at 85% for secondary text on dial-navy. -->
     <Color x:Key="OnNavyMuted">#D9FFFFFF</Color>
 
