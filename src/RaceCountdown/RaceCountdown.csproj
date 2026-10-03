@@ -29,6 +29,9 @@
 		<!-- Versions -->
 		<ApplicationDisplayVersion>0.1.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
+		<!-- The Windows packaging SDK defaults PackageVersion to 1.0.0, which conflicts with Android's
+		     (derived from ApplicationDisplayVersion) when VS evaluates both TFMs together. Pin it explicitly. -->
+		<PackageVersion>1.0.8.0</PackageVersion>
 
 		<!-- Packaged (MSIX) so the app can register as a Windows 11 widget provider (plan D4). -->
 		<WindowsPackageType>MSIX</WindowsPackageType>
